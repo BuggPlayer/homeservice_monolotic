@@ -37,8 +37,8 @@ const StyledPaper = styled(Paper)(({ theme }) => ({
 }))
 
 // Basic Card Component
-export interface CardProps extends MuiCardProps {
-  variant?: 'elevation' | 'outlined' | 'filled'
+export interface CardProps extends Omit<MuiCardProps, 'variant'> {
+  variant?: 'elevation' | 'outlined'
   hover?: boolean
   clickable?: boolean
 }
@@ -243,8 +243,8 @@ export const InfoCard: React.FC<InfoCardProps> = ({
 }
 
 // Custom Paper Component
-export interface CustomPaperProps extends PaperProps {
-  variant?: 'elevation' | 'outlined' | 'filled'
+export interface CustomPaperProps extends Omit<PaperProps, 'variant'> {
+  variant?: 'elevation' | 'outlined'
   padding?: number | string
 }
 

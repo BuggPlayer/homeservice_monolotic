@@ -4,11 +4,10 @@ import {
   ButtonProps as MuiButtonProps,
   IconButton as MuiIconButton,
   IconButtonProps as MuiIconButtonProps,
-  LoadingButton,
-  LoadingButtonProps,
   Fab,
-  FabProps,
+  FabProps as MuiFabProps,
 } from '@mui/material'
+import { LoadingButton } from '@mui/lab'
 import { styled } from '@mui/material/styles'
 
 // Styled Button with custom variants
@@ -41,8 +40,8 @@ const StyledFab = styled(Fab)(({ theme }) => ({
 }))
 
 // Button variants
-export interface ButtonProps extends Omit<MuiButtonProps, 'color'> {
-  variant?: 'text' | 'outlined' | 'contained' | 'gradient'
+export interface ButtonProps extends Omit<MuiButtonProps, 'color' | 'variant'> {
+  variant?: 'text' | 'outlined' | 'contained'
   color?: 'primary' | 'secondary' | 'success' | 'error' | 'warning' | 'info'
   size?: 'small' | 'medium' | 'large'
   loading?: boolean
@@ -145,13 +144,13 @@ export const IconButton: React.FC<IconButtonProps> = ({
 }
 
 // Floating Action Button
-export interface FabProps extends Omit<MuiFabProps, 'color'> {
+export interface FloatingActionButtonProps extends Omit<MuiFabProps, 'color'> {
   color?: 'primary' | 'secondary' | 'success' | 'error' | 'warning' | 'info'
   size?: 'small' | 'medium' | 'large'
   variant?: 'circular' | 'extended'
 }
 
-export const FloatingActionButton: React.FC<FabProps> = ({
+export const FloatingActionButton: React.FC<FloatingActionButtonProps> = ({
   color = 'primary',
   size = 'medium',
   variant = 'circular',

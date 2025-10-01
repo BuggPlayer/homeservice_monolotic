@@ -4,8 +4,6 @@ import {
   ContainerProps,
   Grid,
   GridProps,
-  Grid2,
-  Grid2Props,
   Stack,
   StackProps,
   Box,
@@ -14,10 +12,6 @@ import {
   PaperProps,
   Divider,
   DividerProps,
-  Spacer,
-  SpacerProps,
-  Hidden,
-  HiddenProps,
   useMediaQuery,
   useTheme,
   Breakpoint,
@@ -124,15 +118,18 @@ export const CustomGrid: React.FC<CustomGridProps> = ({
   )
 }
 
-// Grid2 Component (MUI v5.2+)
-export interface CustomGrid2Props extends Grid2Props {
+// Grid2 Component (Simplified Grid System)
+export interface CustomGrid2Props {
   xs?: number
   sm?: number
   md?: number
   lg?: number
   xl?: number
   spacing?: number
+  container?: boolean
+  item?: boolean
   children: React.ReactNode
+  sx?: SxProps<Theme>
 }
 
 export const CustomGrid2: React.FC<CustomGrid2Props> = ({
@@ -142,23 +139,27 @@ export const CustomGrid2: React.FC<CustomGrid2Props> = ({
   lg,
   xl,
   spacing,
+  container = false,
+  item = false,
   children,
   sx,
   ...props
 }) => {
   return (
-    <Grid2
+    <Grid
       xs={xs}
       sm={sm}
       md={md}
       lg={lg}
       xl={xl}
       spacing={spacing}
+      container={container}
+      item={item}
       sx={sx}
       {...props}
     >
       {children}
-    </Grid2>
+    </Grid>
   )
 }
 
@@ -283,7 +284,7 @@ export const CustomDivider: React.FC<CustomDividerProps> = ({
 }
 
 // Spacer Component
-export interface CustomSpacerProps extends SpacerProps {
+export interface CustomSpacerProps {
   size?: number
   axis?: 'horizontal' | 'vertical'
 }
@@ -301,8 +302,8 @@ export const CustomSpacer: React.FC<CustomSpacerProps> = ({
   )
 }
 
-// Hidden Component
-export interface CustomHiddenProps extends HiddenProps {
+// Hidden Component (Responsive visibility)
+export interface CustomHiddenProps {
   xsUp?: boolean
   smUp?: boolean
   mdUp?: boolean
@@ -328,37 +329,50 @@ export const CustomHidden: React.FC<CustomHiddenProps> = ({
   lgDown,
   xlDown,
   children,
-  ...props
 }) => {
-  return (
-    <Hidden
-      xsUp={xsUp}
-      smUp={smUp}
-      mdUp={mdUp}
-      lgUp={lgUp}
-      xlUp={xlUp}
-      xsDown={xsDown}
-      smDown={smDown}
-      mdDown={mdDown}
-      lgDown={lgDown}
-      xlDown={xlDown}
-      {...props}
-    >
-      {children}
-    </Hidden>
-  )
+  const theme = useTheme()
+  
+  // Call all hooks at the top level
+  const isXsUp = useMediaQuery(theme.breakpoints.up('xs'))
+  const isSmUp = useMediaQuery(theme.breakpoints.up('sm'))
+  const isMdUp = useMediaQuery(theme.breakpoints.up('md'))
+  const isLgUp = useMediaQuery(theme.breakpoints.up('lg'))
+  const isXlUp = useMediaQuery(theme.breakpoints.up('xl'))
+  const isXsDown = useMediaQuery(theme.breakpoints.down('xs'))
+  const isSmDown = useMediaQuery(theme.breakpoints.down('sm'))
+  const isMdDown = useMediaQuery(theme.breakpoints.down('md'))
+  const isLgDown = useMediaQuery(theme.breakpoints.down('lg'))
+  const isXlDown = useMediaQuery(theme.breakpoints.down('xl'))
+  
+  const shouldHide = () => {
+    if (xsUp) return isXsUp
+    if (smUp) return isSmUp
+    if (mdUp) return isMdUp
+    if (lgUp) return isLgUp
+    if (xlUp) return isXlUp
+    if (xsDown) return isXsDown
+    if (smDown) return isSmDown
+    if (mdDown) return isMdDown
+    if (lgDown) return isLgDown
+    if (xlDown) return isXlDown
+    return false
+  }
+
+  return shouldHide() ? null : <>{children}</>
 }
 
 // Responsive Hook
-export const useResponsive = () => {
+export const useResponsive = (breakpoint?: Breakpoint, direction?: 'up' | 'down' | 'only') => {
   const theme = useTheme()
   
+  // Always call all hooks at the top level
   const isXs = useMediaQuery(theme.breakpoints.only('xs'))
   const isSm = useMediaQuery(theme.breakpoints.only('sm'))
   const isMd = useMediaQuery(theme.breakpoints.only('md'))
   const isLg = useMediaQuery(theme.breakpoints.only('lg'))
   const isXl = useMediaQuery(theme.breakpoints.only('xl'))
   
+  // For specific breakpoint queries
   const isXsUp = useMediaQuery(theme.breakpoints.up('xs'))
   const isSmUp = useMediaQuery(theme.breakpoints.up('sm'))
   const isMdUp = useMediaQuery(theme.breakpoints.up('md'))
@@ -371,22 +385,46 @@ export const useResponsive = () => {
   const isLgDown = useMediaQuery(theme.breakpoints.down('lg'))
   const isXlDown = useMediaQuery(theme.breakpoints.down('xl'))
   
+  if (breakpoint && direction) {
+    switch (direction) {
+      case 'up':
+        switch (breakpoint) {
+          case 'xs': return isXsUp
+          case 'sm': return isSmUp
+          case 'md': return isMdUp
+          case 'lg': return isLgUp
+          case 'xl': return isXlUp
+          default: return false
+        }
+      case 'down':
+        switch (breakpoint) {
+          case 'xs': return isXsDown
+          case 'sm': return isSmDown
+          case 'md': return isMdDown
+          case 'lg': return isLgDown
+          case 'xl': return isXlDown
+          default: return false
+        }
+      case 'only':
+        switch (breakpoint) {
+          case 'xs': return isXs
+          case 'sm': return isSm
+          case 'md': return isMd
+          case 'lg': return isLg
+          case 'xl': return isXl
+          default: return false
+        }
+      default:
+        return false
+    }
+  }
+  
   return {
     isXs,
     isSm,
     isMd,
     isLg,
     isXl,
-    isXsUp,
-    isSmUp,
-    isMdUp,
-    isLgUp,
-    isXlUp,
-    isXsDown,
-    isSmDown,
-    isMdDown,
-    isLgDown,
-    isXlDown,
   }
 }
 
@@ -404,14 +442,7 @@ export const Responsive: React.FC<ResponsiveProps> = ({
   direction = 'up',
   fallback = null,
 }) => {
-  const theme = useTheme()
-  const isVisible = useMediaQuery(
-    direction === 'up'
-      ? theme.breakpoints.up(breakpoint)
-      : direction === 'down'
-      ? theme.breakpoints.down(breakpoint)
-      : theme.breakpoints.only(breakpoint)
-  )
+  const isVisible = useResponsive(breakpoint, direction)
   
   return isVisible ? <>{children}</> : <>{fallback}</>
 }
@@ -420,13 +451,10 @@ export const Responsive: React.FC<ResponsiveProps> = ({
 export {
   Container as BaseContainer,
   Grid as BaseGrid,
-  Grid2 as BaseGrid2,
   Stack as BaseStack,
   Box as BaseBox,
   Paper as BasePaper,
   Divider as BaseDivider,
-  Spacer as BaseSpacer,
-  Hidden as BaseHidden,
   useMediaQuery,
   useTheme,
 }

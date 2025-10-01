@@ -29,7 +29,7 @@ import {
   FilterList as FilterIcon,
   Visibility as VisibilityIcon,
   Message as MessageIcon,
-  Calendar as CalendarIcon,
+  CalendarMonth as CalendarIcon,
   LocationOn as LocationIcon,
   AttachMoney as DollarIcon,
   AccessTime as TimeIcon,

@@ -21,6 +21,7 @@ import {
   AccountCircle as AccountIcon,
   DarkMode as DarkModeIcon,
   LightMode as LightModeIcon,
+  Settings as SettingsIcon,
 } from '@mui/icons-material'
 import { useTheme as useCustomTheme } from '../../contexts/theme-context'
 
