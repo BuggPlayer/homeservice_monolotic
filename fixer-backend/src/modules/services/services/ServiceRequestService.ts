@@ -226,4 +226,241 @@ export class ServiceRequestService {
       cancelledRequests,
     };
   }
+
+  /**
+   * Get service request statistics for customer
+   */
+  async getCustomerServiceRequestStats(customerId: string) {
+    const totalRequests = await this.serviceRequestRepository.count('customer_id = $1', [customerId]);
+    const openRequests = await this.serviceRequestRepository.count('customer_id = $1 AND status = $2', [customerId, 'open']);
+    const quotedRequests = await this.serviceRequestRepository.count('customer_id = $1 AND status = $2', [customerId, 'quoted']);
+    const bookedRequests = await this.serviceRequestRepository.count('customer_id = $1 AND status = $2', [customerId, 'booked']);
+    const completedRequests = await this.serviceRequestRepository.count('customer_id = $1 AND status = $2', [customerId, 'completed']);
+    const cancelledRequests = await this.serviceRequestRepository.count('customer_id = $1 AND status = $2', [customerId, 'cancelled']);
+
+    return {
+      totalRequests,
+      openRequests,
+      quotedRequests,
+      bookedRequests,
+      completedRequests,
+      cancelledRequests,
+    };
+  }
+
+  /**
+   * Get service requests by service type
+   */
+  async getServiceRequestsByType(
+    serviceType: string, 
+    page: number = 1, 
+    limit: number = 10
+  ) {
+    const result = await this.serviceRequestRepository.findByServiceType(
+      serviceType, 
+      page, 
+      limit
+    );
+    const totalPages = Math.ceil(result.total / limit);
+
+    return {
+      serviceRequests: result.data,
+      pagination: {
+        page,
+        limit,
+        total: result.total,
+        totalPages,
+      },
+    };
+  }
+
+  /**
+   * Get service requests by location
+   */
+  async getServiceRequestsByLocation(
+    city: string, 
+    state: string, 
+    page: number = 1, 
+    limit: number = 10
+  ) {
+    const result = await this.serviceRequestRepository.findByLocation(
+      city, 
+      state, 
+      page, 
+      limit
+    );
+    const totalPages = Math.ceil(result.total / limit);
+
+    return {
+      serviceRequests: result.data,
+      pagination: {
+        page,
+        limit,
+        total: result.total,
+        totalPages,
+      },
+    };
+  }
+
+  /**
+   * Get service requests by urgency
+   */
+  async getServiceRequestsByUrgency(
+    urgency: string, 
+    page: number = 1, 
+    limit: number = 10
+  ) {
+    const result = await this.serviceRequestRepository.findByUrgency(
+      urgency, 
+      page, 
+      limit
+    );
+    const totalPages = Math.ceil(result.total / limit);
+
+    return {
+      serviceRequests: result.data,
+      pagination: {
+        page,
+        limit,
+        total: result.total,
+        totalPages,
+      },
+    };
+  }
+
+  /**
+   * Search service requests
+   */
+  async searchServiceRequests(
+    searchTerm: string, 
+    filters: {
+      serviceType?: string;
+      city?: string;
+      state?: string;
+      urgency?: string;
+      status?: string;
+      budgetMin?: number;
+      budgetMax?: number;
+    } = {},
+    page: number = 1, 
+    limit: number = 10
+  ) {
+    const result = await this.serviceRequestRepository.search(
+      searchTerm,
+      filters.serviceType,
+      filters.city,
+      filters.state,
+      filters.urgency,
+      page,
+      limit
+    );
+    const totalPages = Math.ceil(result.total / limit);
+
+    return {
+      serviceRequests: result.data,
+      pagination: {
+        page,
+        limit,
+        total: result.total,
+        totalPages,
+      },
+    };
+  }
+
+  /**
+   * Get recent service requests
+   */
+  async getRecentServiceRequests(limit: number = 10) {
+    const result = await this.serviceRequestRepository.findAll(1, limit);
+    return {
+      serviceRequests: result.data,
+    };
+  }
+
+  /**
+   * Get service request analytics
+   */
+  async getServiceRequestAnalytics() {
+    // Get requests by status
+    const statusAnalytics = await this.serviceRequestRepository.query(`
+      SELECT status, COUNT(*) as count 
+      FROM service_requests 
+      GROUP BY status
+    `);
+
+    // Get requests by service type
+    const serviceTypeAnalytics = await this.serviceRequestRepository.query(`
+      SELECT service_type, COUNT(*) as count 
+      FROM service_requests 
+      GROUP BY service_type
+    `);
+
+    // Get requests by urgency
+    const urgencyAnalytics = await this.serviceRequestRepository.query(`
+      SELECT urgency, COUNT(*) as count 
+      FROM service_requests 
+      GROUP BY urgency
+    `);
+
+    // Get requests by month (last 12 months)
+    const monthlyAnalytics = await this.serviceRequestRepository.query(`
+      SELECT 
+        DATE_TRUNC('month', created_at) as month,
+        COUNT(*) as count
+      FROM service_requests 
+      WHERE created_at >= NOW() - INTERVAL '12 months'
+      GROUP BY DATE_TRUNC('month', created_at)
+      ORDER BY month
+    `);
+
+    return {
+      statusAnalytics: statusAnalytics.rows,
+      serviceTypeAnalytics: serviceTypeAnalytics.rows,
+      urgencyAnalytics: urgencyAnalytics.rows,
+      monthlyAnalytics: monthlyAnalytics.rows,
+    };
+  }
+
+  /**
+   * Bulk update service request status
+   */
+  async bulkUpdateStatus(
+    serviceRequestIds: string[], 
+    status: string, 
+    updatedBy: string
+  ): Promise<{ updated: number; message: string }> {
+    const query = `
+      UPDATE service_requests 
+      SET status = $1, updated_at = NOW()
+      WHERE id = ANY($2)
+      RETURNING id
+    `;
+    
+    const result = await this.serviceRequestRepository.query(query, [status, serviceRequestIds]);
+    
+    return {
+      updated: result.rows.length,
+      message: `Updated ${result.rows.length} service requests to ${status} status`,
+    };
+  }
+
+  /**
+   * Archive old completed service requests
+   */
+  async archiveOldServiceRequests(daysOld: number = 365): Promise<{ archived: number; message: string }> {
+    const query = `
+      UPDATE service_requests 
+      SET status = 'archived'
+      WHERE status = 'completed' 
+      AND created_at < NOW() - INTERVAL '${daysOld} days'
+      RETURNING id
+    `;
+    
+    const result = await this.serviceRequestRepository.query(query);
+    
+    return {
+      archived: result.rows.length,
+      message: `Archived ${result.rows.length} old completed service requests`,
+    };
+  }
 }

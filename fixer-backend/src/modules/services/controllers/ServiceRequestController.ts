@@ -240,4 +240,282 @@ export class ServiceRequestController {
       res.status(500).json(response);
     }
   };
+
+  /**
+   * Get customer service request statistics
+   */
+  getCustomerServiceRequestStats = async (req: Request, res: Response): Promise<void> => {
+    try {
+      const customerId = (req as any).user.userId;
+      const result = await this.serviceRequestService.getCustomerServiceRequestStats(customerId);
+
+      const response: ApiResponse = {
+        success: true,
+        message: 'Customer service request statistics retrieved successfully',
+        data: result,
+      };
+
+      res.json(response);
+    } catch (error) {
+      const response: ApiResponse = {
+        success: false,
+        message: 'Failed to retrieve customer service request statistics',
+        error: error instanceof Error ? error.message : 'Unknown error',
+      };
+
+      res.status(500).json(response);
+    }
+  };
+
+  /**
+   * Get service requests by type
+   */
+  getServiceRequestsByType = async (req: Request, res: Response): Promise<void> => {
+    try {
+      const { serviceType } = req.params;
+      const page = parseInt(req.query.page as string) || 1;
+      const limit = parseInt(req.query.limit as string) || 10;
+      
+      const result = await this.serviceRequestService.getServiceRequestsByType(
+        serviceType, 
+        page, 
+        limit
+      );
+
+      const response: ApiResponse = {
+        success: true,
+        message: 'Service requests by type retrieved successfully',
+        data: result,
+      };
+
+      res.json(response);
+    } catch (error) {
+      const response: ApiResponse = {
+        success: false,
+        message: 'Failed to retrieve service requests by type',
+        error: error instanceof Error ? error.message : 'Unknown error',
+      };
+
+      res.status(500).json(response);
+    }
+  };
+
+  /**
+   * Get service requests by location
+   */
+  getServiceRequestsByLocation = async (req: Request, res: Response): Promise<void> => {
+    try {
+      const { city, state } = req.params;
+      const page = parseInt(req.query.page as string) || 1;
+      const limit = parseInt(req.query.limit as string) || 10;
+      
+      const result = await this.serviceRequestService.getServiceRequestsByLocation(
+        city, 
+        state, 
+        page, 
+        limit
+      );
+
+      const response: ApiResponse = {
+        success: true,
+        message: 'Service requests by location retrieved successfully',
+        data: result,
+      };
+
+      res.json(response);
+    } catch (error) {
+      const response: ApiResponse = {
+        success: false,
+        message: 'Failed to retrieve service requests by location',
+        error: error instanceof Error ? error.message : 'Unknown error',
+      };
+
+      res.status(500).json(response);
+    }
+  };
+
+  /**
+   * Get service requests by urgency
+   */
+  getServiceRequestsByUrgency = async (req: Request, res: Response): Promise<void> => {
+    try {
+      const { urgency } = req.params;
+      const page = parseInt(req.query.page as string) || 1;
+      const limit = parseInt(req.query.limit as string) || 10;
+      
+      const result = await this.serviceRequestService.getServiceRequestsByUrgency(
+        urgency, 
+        page, 
+        limit
+      );
+
+      const response: ApiResponse = {
+        success: true,
+        message: 'Service requests by urgency retrieved successfully',
+        data: result,
+      };
+
+      res.json(response);
+    } catch (error) {
+      const response: ApiResponse = {
+        success: false,
+        message: 'Failed to retrieve service requests by urgency',
+        error: error instanceof Error ? error.message : 'Unknown error',
+      };
+
+      res.status(500).json(response);
+    }
+  };
+
+  /**
+   * Search service requests
+   */
+  searchServiceRequests = async (req: Request, res: Response): Promise<void> => {
+    try {
+      const { search } = req.query;
+      const filters = {
+        serviceType: req.query.service_type as string,
+        city: req.query.city as string,
+        state: req.query.state as string,
+        urgency: req.query.urgency as string,
+        status: req.query.status as string,
+        budgetMin: req.query.budget_min ? parseFloat(req.query.budget_min as string) : undefined,
+        budgetMax: req.query.budget_max ? parseFloat(req.query.budget_max as string) : undefined,
+      };
+      const page = parseInt(req.query.page as string) || 1;
+      const limit = parseInt(req.query.limit as string) || 10;
+      
+      const result = await this.serviceRequestService.searchServiceRequests(
+        search as string, 
+        filters, 
+        page, 
+        limit
+      );
+
+      const response: ApiResponse = {
+        success: true,
+        message: 'Service requests search completed successfully',
+        data: result,
+      };
+
+      res.json(response);
+    } catch (error) {
+      const response: ApiResponse = {
+        success: false,
+        message: 'Failed to search service requests',
+        error: error instanceof Error ? error.message : 'Unknown error',
+      };
+
+      res.status(500).json(response);
+    }
+  };
+
+  /**
+   * Get recent service requests
+   */
+  getRecentServiceRequests = async (req: Request, res: Response): Promise<void> => {
+    try {
+      const limit = parseInt(req.query.limit as string) || 10;
+      const result = await this.serviceRequestService.getRecentServiceRequests(limit);
+
+      const response: ApiResponse = {
+        success: true,
+        message: 'Recent service requests retrieved successfully',
+        data: result,
+      };
+
+      res.json(response);
+    } catch (error) {
+      const response: ApiResponse = {
+        success: false,
+        message: 'Failed to retrieve recent service requests',
+        error: error instanceof Error ? error.message : 'Unknown error',
+      };
+
+      res.status(500).json(response);
+    }
+  };
+
+  /**
+   * Get service request analytics
+   */
+  getServiceRequestAnalytics = async (req: Request, res: Response): Promise<void> => {
+    try {
+      const result = await this.serviceRequestService.getServiceRequestAnalytics();
+
+      const response: ApiResponse = {
+        success: true,
+        message: 'Service request analytics retrieved successfully',
+        data: result,
+      };
+
+      res.json(response);
+    } catch (error) {
+      const response: ApiResponse = {
+        success: false,
+        message: 'Failed to retrieve service request analytics',
+        error: error instanceof Error ? error.message : 'Unknown error',
+      };
+
+      res.status(500).json(response);
+    }
+  };
+
+  /**
+   * Bulk update service request status
+   */
+  bulkUpdateStatus = async (req: Request, res: Response): Promise<void> => {
+    try {
+      const { serviceRequestIds, status } = req.body;
+      const updatedBy = (req as any).user.userId;
+      
+      const result = await this.serviceRequestService.bulkUpdateStatus(
+        serviceRequestIds, 
+        status, 
+        updatedBy
+      );
+
+      const response: ApiResponse = {
+        success: true,
+        message: result.message,
+        data: result,
+      };
+
+      res.json(response);
+    } catch (error) {
+      const response: ApiResponse = {
+        success: false,
+        message: 'Failed to bulk update service request status',
+        error: error instanceof Error ? error.message : 'Unknown error',
+      };
+
+      res.status(400).json(response);
+    }
+  };
+
+  /**
+   * Archive old service requests
+   */
+  archiveOldServiceRequests = async (req: Request, res: Response): Promise<void> => {
+    try {
+      const daysOld = parseInt(req.query.days_old as string) || 365;
+      const result = await this.serviceRequestService.archiveOldServiceRequests(daysOld);
+
+      const response: ApiResponse = {
+        success: true,
+        message: result.message,
+        data: result,
+      };
+
+      res.json(response);
+    } catch (error) {
+      const response: ApiResponse = {
+        success: false,
+        message: 'Failed to archive old service requests',
+        error: error instanceof Error ? error.message : 'Unknown error',
+      };
+
+      res.status(500).json(response);
+    }
+  };
 }
