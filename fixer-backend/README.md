@@ -1,40 +1,35 @@
-# Fixer - Home Services Marketplace
+# Fixer Backend API
 
-A comprehensive home services marketplace platform built with Node.js, Express.js, TypeScript, and PostgreSQL.
+A comprehensive backend API for the Fixer home services marketplace platform built with Node.js, Express, TypeScript, and PostgreSQL.
 
-## Features
+## 🚀 Features
 
-- **Multi-role Authentication**: Customers, Service Providers, and Admins
-- **Service Request Management**: Create, manage, and track service requests
-- **Provider Profiles**: Detailed provider profiles with ratings and reviews
-- **Quote System**: Providers can submit quotes for service requests
-- **Booking System**: Schedule and manage service appointments
-- **Real-time Communication**: Direct calls between customers and providers
-- **WhatsApp Integration**: Quick booking via WhatsApp Business API
-- **Payment Processing**: Stripe integration for secure payments
-- **AI-powered Matching**: Smart provider matching based on service type and location
+- **User Management**: Registration, authentication, profile management
+- **Service Providers**: Provider registration, verification, profile management
+- **Service Requests**: Create, manage, and track service requests
+- **Quotes & Bookings**: Quote submission, acceptance, and booking management
+- **Real-time Communication**: Voice calls between customers and providers
+- **Payment Processing**: Stripe and Razorpay integration
+- **File Upload**: Image upload with S3/Cloudinary support
+- **Notifications**: Email, SMS, and push notifications
+- **Security**: JWT authentication, rate limiting, input validation
+- **Database**: PostgreSQL with migrations and seeding
 
-## Tech Stack
-
-- **Backend**: Node.js + Express.js + TypeScript
-- **Database**: PostgreSQL + Redis
-- **Authentication**: JWT + bcrypt
-- **File Storage**: AWS S3
-- **External APIs**: Twilio, WhatsApp Business API, Stripe, Google Maps
-
-## Prerequisites
+## 📋 Prerequisites
 
 - Node.js (v18 or higher)
-- PostgreSQL (v13 or higher)
+- PostgreSQL (v12 or higher)
 - Redis (v6 or higher)
-- npm or yarn
+- AWS S3 account (for file storage)
+- Twilio account (for SMS and voice calls)
+- Stripe/Razorpay account (for payments)
 
-## Installation
+## 🛠️ Installation
 
 1. **Clone the repository**
    ```bash
    git clone <repository-url>
-   cd Homeservice
+   cd fixer-backend
    ```
 
 2. **Install dependencies**
@@ -42,136 +37,313 @@ A comprehensive home services marketplace platform built with Node.js, Express.j
    npm install
    ```
 
-3. **Set up environment variables**
+3. **Environment Setup**
    ```bash
    cp env.example .env
    ```
    
-   Edit `.env` file with your configuration:
+   Update the `.env` file with your configuration:
    ```env
+   NODE_ENV=development
+   PORT=3000
+   
    # Database Configuration
    DB_HOST=localhost
    DB_PORT=5432
    DB_NAME=fixer_marketplace
-   DB_USER=postgres
+   DB_USER=your_username
    DB_PASSWORD=your_password
-
-   # JWT Configuration
-   JWT_SECRET=your_jwt_secret_key_here
-   JWT_REFRESH_SECRET=your_jwt_refresh_secret_here
-
+   
    # Redis Configuration
    REDIS_HOST=localhost
    REDIS_PORT=6379
-
-   # External APIs
+   REDIS_PASSWORD=
+   
+   # JWT Configuration
+   JWT_SECRET=your-super-secret-jwt-key
+   JWT_REFRESH_SECRET=your-super-secret-refresh-key
+   
+   # Twilio Configuration
    TWILIO_ACCOUNT_SID=your_twilio_account_sid
    TWILIO_AUTH_TOKEN=your_twilio_auth_token
+   TWILIO_PHONE_NUMBER=your_twilio_phone_number
+   
+   # Payment Configuration
    STRIPE_SECRET_KEY=your_stripe_secret_key
-   # ... other API keys
+   RAZORPAY_KEY_ID=your_razorpay_key_id
+   RAZORPAY_KEY_SECRET=your_razorpay_key_secret
+   
+   # AWS S3 Configuration
+   AWS_ACCESS_KEY_ID=your_aws_access_key_id
+   AWS_SECRET_ACCESS_KEY=your_aws_secret_access_key
+   AWS_REGION=your_aws_region
+   AWS_S3_BUCKET_NAME=your_s3_bucket_name
+   
+   # Email Configuration
+   SMTP_HOST=smtp.gmail.com
+   SMTP_PORT=587
+   SMTP_USER=your_email@gmail.com
+   SMTP_PASS=your_app_password
    ```
 
-4. **Set up the database**
+4. **Database Setup**
    ```bash
-   # Create PostgreSQL database
+   # Create database
    createdb fixer_marketplace
-
+   
    # Run migrations
    npm run migrate
+   
+   # Seed database with sample data
+   npm run seed
    ```
 
-5. **Start the development server**
+5. **Start the server**
    ```bash
+   # Development
    npm run dev
+   
+   # Production
+   npm run build
+   npm start
    ```
 
-The API will be available at `http://localhost:3000`
+## 📚 API Documentation
 
-## API Endpoints
+### Base URL
+```
+http://localhost:3000/api
+```
 
 ### Authentication
-- `POST /api/auth/register` - Register new user
-- `POST /api/auth/login` - Login user
-- `POST /api/auth/refresh-token` - Refresh access token
-- `GET /api/auth/profile` - Get user profile
-- `PUT /api/auth/profile` - Update user profile
+All protected routes require a Bearer token in the Authorization header:
+```
+Authorization: Bearer <your-jwt-token>
+```
 
-### Service Requests
-- `POST /api/service-requests` - Create service request
-- `GET /api/service-requests` - Get service requests with filters
-- `GET /api/service-requests/:id` - Get single service request
-- `PUT /api/service-requests/:id` - Update service request
-- `PUT /api/service-requests/:id/status` - Update request status (admin)
+### Endpoints
 
-### Service Providers
-- `POST /api/providers/profile` - Create/update provider profile
-- `GET /api/providers/profile` - Get provider profile
-- `GET /api/providers` - Get providers with filters
-- `GET /api/providers/:id` - Get single provider
-- `PUT /api/providers/:id/verification-status` - Update verification status (admin)
+#### Authentication
+- `POST /auth/register` - Register new user
+- `POST /auth/login` - Login user
+- `POST /auth/refresh` - Refresh access token
+- `GET /auth/profile` - Get user profile
+- `PUT /auth/profile` - Update user profile
+- `POST /auth/change-password` - Change password
 
-## Database Schema
+#### Service Providers
+- `POST /providers/register` - Register as service provider
+- `GET /providers` - Get providers with filters
+- `GET /providers/search` - Search providers
+- `GET /providers/:id` - Get provider details
+- `PUT /providers/profile` - Update provider profile
+- `GET /providers/statistics` - Get provider statistics
 
-### Core Tables
-- **users**: User accounts (customers, providers, admins)
-- **service_providers**: Provider profiles and business information
-- **service_requests**: Customer service requests
-- **quotes**: Provider quotes for service requests
-- **bookings**: Scheduled service appointments
-- **calls**: Call tracking and recordings
+#### Service Requests
+- `POST /service-requests` - Create service request
+- `GET /service-requests` - Get service requests with filters
+- `GET /service-requests/:id` - Get service request details
+- `PUT /service-requests/:id` - Update service request
+- `DELETE /service-requests/:id` - Delete service request
 
-## Development
+#### Quotes
+- `POST /quotes` - Submit quote
+- `GET /quotes/service-request/:id` - Get quotes for service request
+- `GET /quotes/provider` - Get provider's quotes
+- `GET /quotes/:id` - Get quote details
+- `PUT /quotes/:id` - Update quote
+- `PATCH /quotes/:id/status` - Accept/reject quote
+- `DELETE /quotes/:id` - Delete quote
 
-### Available Scripts
-- `npm run dev` - Start development server with hot reload
+#### Bookings
+- `POST /bookings` - Create booking
+- `GET /bookings/customer` - Get customer's bookings
+- `GET /bookings/provider` - Get provider's bookings
+- `GET /bookings/upcoming` - Get upcoming bookings
+- `GET /bookings/:id` - Get booking details
+- `PATCH /bookings/:id/status` - Update booking status
+- `PUT /bookings/:id` - Update booking
+
+#### Calls
+- `POST /calls` - Initiate call
+- `GET /calls/customer` - Get customer's calls
+- `GET /calls/provider` - Get provider's calls
+- `GET /calls/recent` - Get recent calls
+- `GET /calls/statistics` - Get call statistics
+- `GET /calls/:id` - Get call details
+- `PATCH /calls/:id/end` - End call
+
+### Response Format
+
+All API responses follow this format:
+```json
+{
+  "success": true,
+  "message": "Operation successful",
+  "data": { ... },
+  "error": "Error message (if any)"
+}
+```
+
+### Error Codes
+
+- `400` - Bad Request
+- `401` - Unauthorized
+- `403` - Forbidden
+- `404` - Not Found
+- `422` - Validation Error
+- `429` - Too Many Requests
+- `500` - Internal Server Error
+
+## 🧪 Testing
+
+```bash
+# Run all tests
+npm test
+
+# Run tests with coverage
+npm run test:coverage
+
+# Run specific test file
+npm test -- --testPathPattern=auth.test.ts
+```
+
+## 📦 Scripts
+
+- `npm run dev` - Start development server
 - `npm run build` - Build for production
 - `npm start` - Start production server
-- `npm run migrate` - Run database migrations
 - `npm test` - Run tests
+- `npm run migrate` - Run database migrations
+- `npm run seed` - Seed database with sample data
+- `npm run lint` - Run ESLint
+- `npm run lint:fix` - Fix ESLint errors
 
-### Project Structure
+## 🏗️ Project Structure
+
 ```
-src/
-├── config/          # Database and Redis configuration
-├── controllers/     # Route controllers
-├── database/        # Migrations and seeds
-├── middleware/      # Custom middleware
-├── models/          # Database models
-├── routes/          # API routes
-├── services/        # Business logic
-├── types/           # TypeScript type definitions
-├── utils/           # Utility functions
-└── server.ts        # Main server file
+fixer-backend/
+├── config/                 # Configuration files
+│   ├── database.ts        # Database configuration
+│   └── redis.ts           # Redis configuration
+├── controllers/           # Route controllers
+│   ├── AuthController.ts
+│   ├── ServiceProviderController.ts
+│   ├── ServiceRequestController.ts
+│   ├── QuoteController.ts
+│   ├── BookingController.ts
+│   └── CallController.ts
+├── database/             # Database related files
+│   ├── migrate.ts        # Migration runner
+│   ├── seed.ts           # Database seeder
+│   └── migrations/       # SQL migration files
+├── middleware/           # Express middleware
+│   ├── auth.ts          # Authentication middleware
+│   ├── errorHandler.ts  # Error handling
+│   ├── rateLimiter.ts   # Rate limiting
+│   └── validation.ts    # Input validation
+├── models/              # Database models
+│   ├── User.ts
+│   ├── ServiceProvider.ts
+│   ├── ServiceRequest.ts
+│   ├── Quote.ts
+│   ├── Booking.ts
+│   └── Call.ts
+├── routes/              # API routes
+│   ├── auth.ts
+│   ├── serviceProviders.ts
+│   ├── serviceRequests.ts
+│   ├── quotes.ts
+│   ├── bookings.ts
+│   └── calls.ts
+├── services/            # Business logic services
+│   ├── UserService.ts
+│   ├── ServiceProviderService.ts
+│   ├── ServiceRequestService.ts
+│   ├── NotificationService.ts
+│   ├── FileUploadService.ts
+│   └── PaymentService.ts
+├── tests/               # Test files
+│   └── setup.ts
+├── types/               # TypeScript type definitions
+│   └── index.ts
+├── utils/               # Utility functions
+│   └── auth.ts
+├── server.ts            # Main server file
+├── package.json
+├── tsconfig.json
+└── README.md
 ```
 
-## Environment Variables
+## 🔒 Security Features
 
-| Variable | Description | Required |
-|----------|-------------|----------|
-| `PORT` | Server port | No (default: 3000) |
-| `NODE_ENV` | Environment | No (default: development) |
-| `DB_HOST` | PostgreSQL host | Yes |
-| `DB_PORT` | PostgreSQL port | No (default: 5432) |
-| `DB_NAME` | Database name | Yes |
-| `DB_USER` | Database user | Yes |
-| `DB_PASSWORD` | Database password | Yes |
-| `JWT_SECRET` | JWT secret key | Yes |
-| `JWT_REFRESH_SECRET` | JWT refresh secret | Yes |
-| `REDIS_HOST` | Redis host | Yes |
-| `REDIS_PORT` | Redis port | No (default: 6379) |
+- JWT-based authentication
+- Password hashing with bcrypt
+- Rate limiting to prevent abuse
+- Input validation and sanitization
+- CORS configuration
+- Helmet for security headers
+- SQL injection prevention with parameterized queries
 
-## Contributing
+## 🚀 Deployment
+
+### Docker Deployment
+
+1. **Create Dockerfile**
+   ```dockerfile
+   FROM node:18-alpine
+   WORKDIR /app
+   COPY package*.json ./
+   RUN npm ci --only=production
+   COPY . .
+   RUN npm run build
+   EXPOSE 3000
+   CMD ["npm", "start"]
+   ```
+
+2. **Build and run**
+   ```bash
+   docker build -t fixer-backend .
+   docker run -p 3000:3000 fixer-backend
+   ```
+
+### Environment Variables for Production
+
+Ensure all environment variables are properly set in your production environment:
+
+- Database connection details
+- Redis connection details
+- JWT secrets
+- Third-party service credentials
+- CORS origins
+- File upload settings
+
+## 📝 Contributing
 
 1. Fork the repository
 2. Create a feature branch
 3. Make your changes
-4. Add tests if applicable
-5. Submit a pull request
+4. Add tests for new functionality
+5. Ensure all tests pass
+6. Submit a pull request
 
-## License
+## 📄 License
 
-MIT License - see LICENSE file for details
+This project is licensed under the MIT License.
 
-## Support
+## 🆘 Support
 
-For support and questions, please contact the development team or create an issue in the repository.
+For support, email support@fixer.com or create an issue in the repository.
+
+## 🔄 Changelog
+
+### v1.0.0
+- Initial release
+- User authentication and management
+- Service provider registration and management
+- Service request creation and management
+- Quote and booking system
+- Real-time communication
+- Payment processing
+- File upload functionality
+- Notification system
