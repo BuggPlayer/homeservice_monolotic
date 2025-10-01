@@ -1,13 +1,13 @@
 import { createServer } from 'http';
 import app from './src/app';
 import { config } from './src/config';
-import { SocketService } from './src/services/SocketService';
+// import { SocketService } from './src/services/SocketService';
 
 const server = createServer(app);
 const PORT = config.PORT;
 
 // Initialize Socket.IO
-const socketService = new SocketService(server);
+// const socketService = new SocketService(server);
 
 // Start server
 server.listen(PORT, () => {
@@ -18,6 +18,6 @@ server.listen(PORT, () => {
 });
 
 // Export socket service for use in other modules
-export { socketService };
+// export { socketService };
 
 export default app;
