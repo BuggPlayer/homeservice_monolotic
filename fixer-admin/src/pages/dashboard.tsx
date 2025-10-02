@@ -71,27 +71,43 @@ const StatCard = ({ title, value, change, icon: Icon, color = 'primary' }: any) 
 
   return (
     <Card sx={{ height: '100%' }}>
-      <CardContent>
-        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
-          <Typography variant="h6" color="text.secondary" sx={{ fontSize: '0.875rem' }}>
+      <CardContent sx={{ p: { xs: 2, sm: 3 } }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: { xs: 1.5, sm: 2 } }}>
+          <Typography variant="h6" color="text.secondary" sx={{ 
+            fontSize: { xs: '0.75rem', sm: '0.875rem' }
+          }}>
             {title}
           </Typography>
-          <Icon sx={{ color: `${color}.main`, fontSize: 24 }} />
+          <Icon sx={{ 
+            color: `${color}.main`, 
+            fontSize: { xs: 20, sm: 24 } 
+          }} />
         </Box>
-        <Typography variant="h4" sx={{ fontWeight: 700, mb: 1 }}>
+        <Typography variant="h4" sx={{ 
+          fontWeight: 700, 
+          mb: { xs: 0.5, sm: 1 },
+          fontSize: { xs: '1.5rem', sm: '2rem', md: '2.5rem' }
+        }}>
           {value}
         </Typography>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
           {change > 0 ? (
-            <TrendingUpIcon sx={{ color: 'success.main', fontSize: 16 }} />
+            <TrendingUpIcon sx={{ 
+              color: 'success.main', 
+              fontSize: { xs: 14, sm: 16 } 
+            }} />
           ) : (
-            <TrendingDownIcon sx={{ color: 'error.main', fontSize: 16 }} />
+            <TrendingDownIcon sx={{ 
+              color: 'error.main', 
+              fontSize: { xs: 14, sm: 16 } 
+            }} />
           )}
           <Typography
             variant="body2"
             sx={{
               color: change > 0 ? 'success.main' : 'error.main',
               fontWeight: 600,
+              fontSize: { xs: '0.75rem', sm: '0.875rem' }
             }}
           >
             {change > 0 ? '+' : ''}{change}% from last month
@@ -108,19 +124,25 @@ export function Dashboard() {
   const isTablet = useMediaQuery(theme.breakpoints.down('md'))
 
   return (
-    <Box sx={{ flexGrow: 1 }}>
+    <Box sx={{ flexGrow: 1, p: { xs: 1, sm: 2, md: 3 } }}>
       {/* Header */}
-      <Box sx={{ mb: 4 }}>
-        <Typography variant="h4" sx={{ fontWeight: 700, mb: 1 }}>
+      <Box sx={{ mb: { xs: 2, sm: 3, md: 4 } }}>
+        <Typography variant="h4" sx={{ 
+          fontWeight: 700, 
+          mb: 1,
+          fontSize: { xs: '1.5rem', sm: '2rem', md: '2.5rem' }
+        }}>
           Dashboard
         </Typography>
-        <Typography variant="body1" color="text.secondary">
+        <Typography variant="body1" color="text.secondary" sx={{
+          fontSize: { xs: '0.875rem', sm: '1rem' }
+        }}>
           Welcome back! Here's what's happening with your business today.
         </Typography>
       </Box>
 
       {/* Stats Grid */}
-      <Grid container spacing={3} sx={{ mb: 4 }}>
+      <Grid container spacing={{ xs: 2, sm: 3 }} sx={{ mb: { xs: 3, sm: 4 } }}>
         <Grid item xs={12} sm={6} lg={3}>
           <StatCard
             title="Total Revenue"
@@ -160,17 +182,23 @@ export function Dashboard() {
       </Grid>
 
       {/* Charts Row */}
-      <Grid container spacing={3} sx={{ mb: 4 }}>
+      <Grid container spacing={{ xs: 2, sm: 3 }} sx={{ mb: { xs: 3, sm: 4 } }}>
         <Grid item xs={12} lg={8}>
-          <Card>
-            <CardContent>
-              <Typography variant="h6" sx={{ mb: 1 }}>
+          <Card sx={{ height: '100%' }}>
+            <CardContent sx={{ p: { xs: 2, sm: 3 } }}>
+              <Typography variant="h6" sx={{ 
+                mb: 1,
+                fontSize: { xs: '1rem', sm: '1.25rem' }
+              }}>
                 Revenue Overview
               </Typography>
-              <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+              <Typography variant="body2" color="text.secondary" sx={{ 
+                mb: { xs: 2, sm: 3 },
+                fontSize: { xs: '0.875rem', sm: '1rem' }
+              }}>
                 Monthly revenue and order trends for the past 6 months
               </Typography>
-              <Box sx={{ height: 300 }}>
+              <Box sx={{ height: { xs: 250, sm: 300 } }}>
                 <ResponsiveContainer width="100%" height="100%">
                   <LineChart data={revenueData}>
                     <CartesianGrid strokeDasharray="3 3" />
@@ -205,21 +233,27 @@ export function Dashboard() {
 
         <Grid item xs={12} lg={4}>
           <Card sx={{ height: '100%' }}>
-            <CardContent>
-              <Typography variant="h6" sx={{ mb: 1 }}>
+            <CardContent sx={{ p: { xs: 2, sm: 3 } }}>
+              <Typography variant="h6" sx={{ 
+                mb: 1,
+                fontSize: { xs: '1rem', sm: '1.25rem' }
+              }}>
                 Top Categories
               </Typography>
-              <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+              <Typography variant="body2" color="text.secondary" sx={{ 
+                mb: { xs: 2, sm: 3 },
+                fontSize: { xs: '0.875rem', sm: '1rem' }
+              }}>
                 Best performing service categories
               </Typography>
               <List dense>
                 {topCategories.map((category, index) => (
-                  <ListItem key={category.name} sx={{ px: 0 }}>
-                    <ListItemIcon sx={{ minWidth: 40 }}>
+                  <ListItem key={category.name} sx={{ px: 0, py: 0.5 }}>
+                    <ListItemIcon sx={{ minWidth: 32 }}>
                       <Box
                         sx={{
-                          width: 12,
-                          height: 12,
+                          width: 10,
+                          height: 10,
                           borderRadius: '50%',
                           backgroundColor: category.color,
                         }}
@@ -228,6 +262,12 @@ export function Dashboard() {
                     <ListItemText
                       primary={category.name}
                       secondary={`${formatCurrency(category.revenue)} • ${category.count} services`}
+                      primaryTypographyProps={{
+                        fontSize: { xs: '0.875rem', sm: '1rem' }
+                      }}
+                      secondaryTypographyProps={{
+                        fontSize: { xs: '0.75rem', sm: '0.875rem' }
+                      }}
                     />
                   </ListItem>
                 ))}
@@ -238,21 +278,27 @@ export function Dashboard() {
       </Grid>
 
       {/* Bottom Row */}
-      <Grid container spacing={3}>
+      <Grid container spacing={{ xs: 2, sm: 3 }}>
         <Grid item xs={12} lg={8}>
-          <Card>
-            <CardContent>
-              <Typography variant="h6" sx={{ mb: 1 }}>
+          <Card sx={{ height: '100%' }}>
+            <CardContent sx={{ p: { xs: 2, sm: 3 } }}>
+              <Typography variant="h6" sx={{ 
+                mb: 1,
+                fontSize: { xs: '1rem', sm: '1.25rem' }
+              }}>
                 Recent Activity
               </Typography>
-              <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+              <Typography variant="body2" color="text.secondary" sx={{ 
+                mb: { xs: 2, sm: 3 },
+                fontSize: { xs: '0.875rem', sm: '1rem' }
+              }}>
                 Latest updates and notifications
               </Typography>
               <List>
                 {recentActivity.map((activity, index) => (
                   <React.Fragment key={index}>
-                    <ListItem sx={{ px: 0 }}>
-                      <ListItemIcon sx={{ minWidth: 40 }}>
+                    <ListItem sx={{ px: 0, py: 0.5 }}>
+                      <ListItemIcon sx={{ minWidth: 32 }}>
                         <Box
                           sx={{
                             width: 8,
@@ -265,12 +311,21 @@ export function Dashboard() {
                       <ListItemText
                         primary={activity.message}
                         secondary={formatDate(activity.timestamp)}
+                        primaryTypographyProps={{
+                          fontSize: { xs: '0.875rem', sm: '1rem' }
+                        }}
+                        secondaryTypographyProps={{
+                          fontSize: { xs: '0.75rem', sm: '0.875rem' }
+                        }}
                       />
                       <Chip
                         label={activity.type.replace('_', ' ')}
                         size="small"
                         variant="outlined"
-                        sx={{ ml: 2 }}
+                        sx={{ 
+                          ml: 2,
+                          fontSize: { xs: '0.75rem', sm: '0.875rem' }
+                        }}
                       />
                     </ListItem>
                     {index < recentActivity.length - 1 && <Divider />}
@@ -283,36 +338,66 @@ export function Dashboard() {
 
         <Grid item xs={12} lg={4}>
           <Card sx={{ height: '100%' }}>
-            <CardContent>
-              <Typography variant="h6" sx={{ mb: 1 }}>
+            <CardContent sx={{ p: { xs: 2, sm: 3 } }}>
+              <Typography variant="h6" sx={{ 
+                mb: 1,
+                fontSize: { xs: '1rem', sm: '1.25rem' }
+              }}>
                 Quick Stats
               </Typography>
-              <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+              <Typography variant="body2" color="text.secondary" sx={{ 
+                mb: { xs: 2, sm: 3 },
+                fontSize: { xs: '0.875rem', sm: '1rem' }
+              }}>
                 Key performance indicators
               </Typography>
               <List dense>
-                <ListItem sx={{ px: 0 }}>
+                <ListItem sx={{ px: 0, py: 0.5 }}>
                   <ListItemText
                     primary="Avg. Order Value"
                     secondary={formatCurrency(285.75)}
+                    primaryTypographyProps={{
+                      fontSize: { xs: '0.875rem', sm: '1rem' }
+                    }}
+                    secondaryTypographyProps={{
+                      fontSize: { xs: '0.75rem', sm: '0.875rem' }
+                    }}
                   />
                 </ListItem>
-                <ListItem sx={{ px: 0 }}>
+                <ListItem sx={{ px: 0, py: 0.5 }}>
                   <ListItemText
                     primary="Conversion Rate"
                     secondary="12.5%"
+                    primaryTypographyProps={{
+                      fontSize: { xs: '0.875rem', sm: '1rem' }
+                    }}
+                    secondaryTypographyProps={{
+                      fontSize: { xs: '0.75rem', sm: '0.875rem' }
+                    }}
                   />
                 </ListItem>
-                <ListItem sx={{ px: 0 }}>
+                <ListItem sx={{ px: 0, py: 0.5 }}>
                   <ListItemText
                     primary="Customer Satisfaction"
                     secondary="4.8/5"
+                    primaryTypographyProps={{
+                      fontSize: { xs: '0.875rem', sm: '1rem' }
+                    }}
+                    secondaryTypographyProps={{
+                      fontSize: { xs: '0.75rem', sm: '0.875rem' }
+                    }}
                   />
                 </ListItem>
-                <ListItem sx={{ px: 0 }}>
+                <ListItem sx={{ px: 0, py: 0.5 }}>
                   <ListItemText
                     primary="Response Time"
                     secondary="2.3h"
+                    primaryTypographyProps={{
+                      fontSize: { xs: '0.875rem', sm: '1rem' }
+                    }}
+                    secondaryTypographyProps={{
+                      fontSize: { xs: '0.75rem', sm: '0.875rem' }
+                    }}
                   />
                 </ListItem>
               </List>

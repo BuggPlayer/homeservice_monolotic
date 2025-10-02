@@ -1,4 +1,4 @@
-import { ServiceRequest } from '@/core/types';
+import { ServiceRequest } from '../../core/types';
 
 export interface CreateServiceRequestRequest {
   service_type: string;

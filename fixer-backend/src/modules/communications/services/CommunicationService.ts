@@ -1,4 +1,4 @@
-import { CallRepository } from '@/core/database/repositories';
+import { CallRepository } from '../../../core/database/repositories';
 import { Call } from '@/types';
 import { 
   InitiateCallRequest, 
@@ -192,13 +192,13 @@ export class CommunicationService {
     const cancelledCalls = await this.callRepository.count('status = $1', ['cancelled']);
 
     // Get duration statistics
-    const result = await this.callRepository.query(
+    const result = await this.callRepository.executeQuery(
       'SELECT AVG(call_duration) as avg_duration, SUM(call_duration) as total_duration FROM calls WHERE status = $1',
       ['completed']
     );
 
-    const averageDuration = parseFloat(result.rows[0].avg_duration) || 0;
-    const totalDuration = parseInt(result.rows[0].total_duration) || 0;
+    const averageDuration = parseFloat((result.rows[0] as any).avg_duration) || 0;
+    const totalDuration = parseInt((result.rows[0] as any).total_duration) || 0;
 
     return {
       totalCalls,

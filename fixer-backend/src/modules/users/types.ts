@@ -1,4 +1,4 @@
-import { User } from '@/core/types';
+import { User } from '../../core/types';
 
 export interface GetUsersRequest {
   page?: number;

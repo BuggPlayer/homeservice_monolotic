@@ -1,4 +1,4 @@
-import { QuoteRepository } from '@/core/database/repositories';
+import { QuoteRepository } from '../../../core/database/repositories';
 import { Quote } from '@/types';
 import { 
   CreateQuoteRequest, 
@@ -211,12 +211,12 @@ export class QuoteService {
     const expiredQuotes = await this.quoteRepository.count('status = $1', ['expired']);
 
     // Get average amount
-    const result = await this.quoteRepository.query(
+    const result = await this.quoteRepository.executeQuery(
       'SELECT AVG(amount) as avg_amount FROM quotes WHERE status = $1',
       ['accepted']
     );
 
-    const averageAmount = parseFloat(result.rows[0].avg_amount) || 0;
+    const averageAmount = parseFloat((result.rows[0] as any).avg_amount) || 0;
 
     return {
       totalQuotes,

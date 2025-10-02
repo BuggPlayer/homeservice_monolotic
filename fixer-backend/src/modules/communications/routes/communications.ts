@@ -9,8 +9,8 @@ import {
   validateCallStatusUpdate,
   validatePagination,
   validateIdParam
-} from '@/core/middleware';
-import { RateLimiter } from '@/core/middleware/rateLimiter';
+} from '../../../core/middleware';
+import { RateLimiter } from '../../../core/middleware/rateLimiter';
 
 const router = Router();
 const communicationController = new CommunicationController();

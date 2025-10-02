@@ -1,4 +1,4 @@
-import { User, JWTPayload, AuthTokens } from '@/core/types';
+import { User, JWTPayload, AuthTokens } from '../../core/types';
 
 export interface LoginRequest {
   email: string;

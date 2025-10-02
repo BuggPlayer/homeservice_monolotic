@@ -7,8 +7,8 @@ import {
   validatePagination,
   validateIdParam,
   validateServiceProviderRegistration
-} from '@/core/middleware';
-import { RateLimiter } from '@/core/middleware/rateLimiter';
+} from '../../../core/middleware';
+import { RateLimiter } from '../../../core/middleware/rateLimiter';
 
 const router = Router();
 const serviceProviderController = new ServiceProviderController();

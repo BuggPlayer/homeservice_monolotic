@@ -1,24 +1,50 @@
-import jwt from 'jsonwebtoken';
+import * as jwt from 'jsonwebtoken';
 import { config } from '../../config';
-import { JWTPayload, AuthTokens } from '@/types';
+import { JWTPayload, AuthTokens } from '../../types';
 
 export class AuthUtils {
+  /**
+   * Validate JWT configuration
+   */
+  private static validateJWTConfig(): void {
+    if (!config.JWT.SECRET) {
+      throw new Error('JWT_SECRET must be set in environment variables');
+    }
+    if (!config.JWT.REFRESH_SECRET) {
+      throw new Error('JWT_REFRESH_SECRET must be set in environment variables');
+    }
+  }
+
   /**
    * Generate JWT access token
    */
   static generateAccessToken(payload: Omit<JWTPayload, 'iat' | 'exp'>): string {
-    return jwt.sign(payload, config.JWT.SECRET, {
-      expiresIn: config.JWT.ACCESS_TOKEN_EXPIRATION,
-    });
+    this.validateJWTConfig();
+    
+    const secret = config.JWT.SECRET;
+    const expiresIn = config.JWT.ACCESS_TOKEN_EXPIRATION;
+    
+    if (!secret) {
+      throw new Error('JWT secret is not configured');
+    }
+    
+    return jwt.sign(payload, secret, { expiresIn } as jwt.SignOptions);
   }
 
   /**
    * Generate JWT refresh token
    */
   static generateRefreshToken(payload: Omit<JWTPayload, 'iat' | 'exp'>): string {
-    return jwt.sign(payload, config.JWT.REFRESH_SECRET, {
-      expiresIn: config.JWT.REFRESH_TOKEN_EXPIRATION,
-    });
+    this.validateJWTConfig();
+    
+    const secret = config.JWT.REFRESH_SECRET;
+    const expiresIn = config.JWT.REFRESH_TOKEN_EXPIRATION;
+    
+    if (!secret) {
+      throw new Error('JWT refresh secret is not configured');
+    }
+    
+    return jwt.sign(payload, secret, { expiresIn } as jwt.SignOptions);
   }
 
   /**
@@ -35,8 +61,15 @@ export class AuthUtils {
    * Verify JWT access token
    */
   static verifyAccessToken(token: string): JWTPayload {
+    this.validateJWTConfig();
+    
+    const secret = config.JWT.SECRET;
+    if (!secret) {
+      throw new Error('JWT secret is not configured');
+    }
+    
     try {
-      return jwt.verify(token, config.JWT.SECRET) as JWTPayload;
+      return jwt.verify(token, secret) as JWTPayload;
     } catch (error) {
       throw new Error('Invalid or expired access token');
     }
@@ -46,8 +79,15 @@ export class AuthUtils {
    * Verify JWT refresh token
    */
   static verifyRefreshToken(token: string): JWTPayload {
+    this.validateJWTConfig();
+    
+    const secret = config.JWT.REFRESH_SECRET;
+    if (!secret) {
+      throw new Error('JWT refresh secret is not configured');
+    }
+    
     try {
-      return jwt.verify(token, config.JWT.REFRESH_SECRET) as JWTPayload;
+      return jwt.verify(token, secret) as JWTPayload;
     } catch (error) {
       throw new Error('Invalid or expired refresh token');
     }

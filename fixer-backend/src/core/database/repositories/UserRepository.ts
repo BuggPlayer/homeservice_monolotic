@@ -1,5 +1,5 @@
 import { BaseRepository } from './BaseRepository';
-import { User } from '@/types';
+import { User } from '../../../types';
 
 export class UserRepository extends BaseRepository<User> {
   constructor() {
@@ -35,10 +35,10 @@ export class UserRepository extends BaseRepository<User> {
     const offset = (page - 1) * limit;
     
     const countResult = await this.query(
-      'SELECT COUNT(*) FROM users WHERE user_type = $1',
+      'SELECT COUNT(*) as count FROM users WHERE user_type = $1',
       [userType]
     );
-    const total = parseInt(countResult.rows[0].count);
+    const total = parseInt((countResult.rows[0] as any).count);
 
     const result = await this.query(
       'SELECT * FROM users WHERE user_type = $1 ORDER BY created_at DESC LIMIT $2 OFFSET $3',
@@ -81,11 +81,11 @@ export class UserRepository extends BaseRepository<User> {
     const searchPattern = `%${searchTerm}%`;
     
     const countResult = await this.query(
-      `SELECT COUNT(*) FROM users 
+      `SELECT COUNT(*) as count FROM users 
        WHERE first_name ILIKE $1 OR last_name ILIKE $1 OR email ILIKE $1`,
       [searchPattern]
     );
-    const total = parseInt(countResult.rows[0].count);
+    const total = parseInt((countResult.rows[0] as any).count);
 
     const result = await this.query(
       `SELECT * FROM users 

@@ -1,5 +1,5 @@
-import { UserRepository } from '@/core/database/repositories';
-import { User } from '@/core/types';
+import { UserRepository } from '../../../core/database/repositories';
+import { User } from '../../../core/types';
 import { 
   GetUsersRequest, 
   GetUsersResponse, 

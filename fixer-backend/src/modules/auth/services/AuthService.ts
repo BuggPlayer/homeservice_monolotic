@@ -1,6 +1,6 @@
-import { UserRepository } from '@/core/database/repositories';
-import { AuthUtils, BcryptUtils } from '@/core/utils';
-import { User, JWTPayload } from '@/core/types';
+import { UserRepository } from '../../../core/database/repositories';
+import { AuthUtils, BcryptUtils } from '../../../core/utils';
+import { User, JWTPayload } from '../../../core/types';
 import { 
   LoginRequest, 
   RegisterRequest, 

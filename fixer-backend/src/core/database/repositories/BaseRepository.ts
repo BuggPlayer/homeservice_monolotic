@@ -1,7 +1,7 @@
-import { pool } from '@/config';
-import { QueryResult } from 'pg';
+import { pool } from '../../../config/database';
+import { QueryResult, QueryResultRow } from 'pg';
 
-export abstract class BaseRepository<T> {
+export abstract class BaseRepository<T extends QueryResultRow> {
   protected tableName: string;
 
   constructor(tableName: string) {
@@ -44,7 +44,7 @@ export abstract class BaseRepository<T> {
     const offset = (page - 1) * limit;
     
     const countResult = await this.query(`SELECT COUNT(*) FROM ${this.tableName}`);
-    const total = parseInt(countResult.rows[0].count);
+    const total = parseInt(countResult.rows[0].count as string);
 
     const result = await this.query(
       `SELECT * FROM ${this.tableName} ORDER BY ${orderBy} ${orderDirection} LIMIT $1 OFFSET $2`,
@@ -55,6 +55,17 @@ export abstract class BaseRepository<T> {
       data: result.rows,
       total,
     };
+  }
+
+  /**
+   * Find records with where clause
+   */
+  async find(whereClause: string, params?: any[]): Promise<T[]> {
+    const result = await this.query(
+      `SELECT * FROM ${this.tableName} WHERE ${whereClause}`,
+      params
+    );
+    return result.rows;
   }
 
   /**
@@ -98,7 +109,7 @@ export abstract class BaseRepository<T> {
       [id]
     );
 
-    return result.rowCount > 0;
+    return (result.rowCount ?? 0) > 0;
   }
 
   /**
@@ -111,7 +122,7 @@ export abstract class BaseRepository<T> {
         [id]
       );
 
-      return result.rowCount > 0;
+      return (result.rowCount ?? 0) > 0;
     } catch (error) {
       // If deleted_at column doesn't exist, fall back to hard delete
       return this.delete(id);
@@ -140,6 +151,13 @@ export abstract class BaseRepository<T> {
       params
     );
 
-    return parseInt(result.rows[0].count);
+    return parseInt(result.rows[0].count as string);
+  }
+
+  /**
+   * Execute a custom query (public method for services)
+   */
+  async executeQuery(text: string, params?: any[]): Promise<QueryResult<T>> {
+    return this.query(text, params);
   }
 }

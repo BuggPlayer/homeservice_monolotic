@@ -5,3 +5,5 @@ export { ServiceRequestRepository } from './ServiceRequestRepository';
 export { QuoteRepository } from './QuoteRepository';
 export { BookingRepository } from './BookingRepository';
 export { CallRepository } from './CallRepository';
+export { ProductRepository } from './ProductRepository';
+export { CategoryRepository } from './CategoryRepository';

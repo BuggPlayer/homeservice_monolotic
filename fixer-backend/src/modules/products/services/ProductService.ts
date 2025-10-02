@@ -1,5 +1,5 @@
-import { ProductRepository, CategoryRepository } from '@/core/database/repositories';
-import { Product, Category } from '@/types';
+import { ProductRepository, CategoryRepository } from '../../../core/database/repositories';
+import { Product, Category } from '../../../types';
 import { 
   CreateProductRequest, 
   UpdateProductRequest, 
@@ -94,50 +94,19 @@ export class ProductService {
     let result;
     
     if (search) {
-      result = await this.productRepository.search(
-        search, 
-        category_id, 
-        provider_id, 
-        is_active, 
-        is_featured, 
-        min_price, 
-        max_price, 
-        tags, 
-        page, 
-        limit, 
-        sort_by, 
-        sort_order
-      );
+      const products = await this.productRepository.search(search);
+      result = { data: products, total: products.length };
     } else if (category_id) {
-      result = await this.productRepository.findByCategory(
-        category_id, 
-        page, 
-        limit, 
-        sort_by, 
-        sort_order
-      );
+      const products = await this.productRepository.findByCategory(category_id);
+      result = { data: products, total: products.length };
     } else if (provider_id) {
-      result = await this.productRepository.findByProvider(
-        provider_id, 
-        page, 
-        limit, 
-        sort_by, 
-        sort_order
-      );
+      const products = await this.productRepository.findByProvider(provider_id);
+      result = { data: products, total: products.length };
     } else if (is_featured) {
-      result = await this.productRepository.findFeatured(
-        page, 
-        limit, 
-        sort_by, 
-        sort_order
-      );
+      const products = await this.productRepository.findFeatured();
+      result = { data: products, total: products.length };
     } else {
-      result = await this.productRepository.findAll(
-        page, 
-        limit, 
-        sort_by, 
-        sort_order
-      );
+      result = await this.productRepository.findAll(page, limit, sort_by, sort_order.toUpperCase() as 'ASC' | 'DESC');
     }
 
     const totalPages = Math.ceil(result.total / limit);
@@ -251,19 +220,15 @@ export class ProductService {
     page: number = 1, 
     limit: number = 10
   ) {
-    const result = await this.productRepository.findByProvider(
-      providerId, 
-      page, 
-      limit
-    );
-    const totalPages = Math.ceil(result.total / limit);
+    const products = await this.productRepository.findByProvider(providerId);
+    const totalPages = Math.ceil(products.length / limit);
 
     return {
-      products: result.data,
+      products: products.slice((page - 1) * limit, page * limit),
       pagination: {
         page,
         limit,
-        total: result.total,
+        total: products.length,
         totalPages,
       },
     };
@@ -274,19 +239,19 @@ export class ProductService {
    */
   async getProductStats(): Promise<GetProductStatsResponse> {
     const totalProducts = await this.productRepository.count();
-    const activeProducts = await this.productRepository.count('is_active = $1', [true]);
+    const activeProducts = await this.productRepository.count('status = $1', ['active']);
     const featuredProducts = await this.productRepository.count('is_featured = $1', [true]);
     const lowStockProducts = await this.productRepository.count('stock_quantity < 10 AND stock_quantity > 0', []);
     const outOfStockProducts = await this.productRepository.count('stock_quantity = 0', []);
 
     // Get value statistics
-    const result = await this.productRepository.query(
-      'SELECT SUM(price * stock_quantity) as total_value, AVG(price) as avg_price FROM products WHERE is_active = $1',
-      [true]
+    const result = await this.productRepository.executeQuery(
+      'SELECT SUM(price * stock_quantity) as total_value, AVG(price) as avg_price FROM products WHERE status = $1',
+      ['active']
     );
 
-    const totalValue = parseFloat(result.rows[0].total_value) || 0;
-    const averagePrice = parseFloat(result.rows[0].avg_price) || 0;
+    const totalValue = parseFloat((result.rows[0] as any).total_value) || 0;
+    const averagePrice = parseFloat((result.rows[0] as any).avg_price) || 0;
 
     return {
       totalProducts,
@@ -343,11 +308,14 @@ export class ProductService {
     let result;
     
     if (search) {
-      result = await this.categoryRepository.search(search, page, limit);
+      const categories = await this.categoryRepository.search(search);
+      result = { data: categories, total: categories.length };
     } else if (parent_id) {
-      result = await this.categoryRepository.findByParentId(parent_id, page, limit);
+      const categories = await this.categoryRepository.findByParentId(parent_id);
+      result = { data: categories, total: categories.length };
     } else if (is_active !== undefined) {
-      result = await this.categoryRepository.findByActiveStatus(is_active, page, limit);
+      const categories = await this.categoryRepository.findByStatus(is_active ? 'active' : 'inactive');
+      result = { data: categories, total: categories.length };
     } else {
       result = await this.categoryRepository.findAll(page, limit);
     }
@@ -487,7 +455,7 @@ export class ProductService {
    * Get subcategories
    */
   async getSubcategories(categoryId: string) {
-    const result = await this.categoryRepository.findByParentId(categoryId, 1, 1000);
-    return { categories: result.data };
+    const categories = await this.categoryRepository.findByParentId(categoryId);
+    return { categories };
   }
 }

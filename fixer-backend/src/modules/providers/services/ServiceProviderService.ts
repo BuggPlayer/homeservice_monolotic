@@ -1,4 +1,4 @@
-import { ServiceProviderRepository } from '@/core/database/repositories';
+import { ServiceProviderRepository } from '../../../core/database/repositories';
 import { ServiceProvider } from '@/types';
 import { 
   CreateServiceProviderRequest, 
@@ -224,13 +224,13 @@ export class ServiceProviderService {
     );
 
     // Get average rating
-    const result = await this.serviceProviderRepository.query(
+    const result = await this.serviceProviderRepository.executeQuery(
       'SELECT AVG(rating) as avg_rating, SUM(total_reviews) as total_reviews FROM service_providers WHERE verification_status = $1',
       ['verified']
     );
 
-    const averageRating = parseFloat(result.rows[0].avg_rating) || 0;
-    const totalReviews = parseInt(result.rows[0].total_reviews) || 0;
+    const averageRating = parseFloat((result.rows[0] as any).avg_rating) || 0;
+    const totalReviews = parseInt((result.rows[0] as any).total_reviews) || 0;
 
     return {
       totalProviders,

@@ -1,5 +1,5 @@
 import { BaseRepository } from './BaseRepository';
-import { Quote } from '@/types';
+import { Quote } from '../../../types';
 
 export class QuoteRepository extends BaseRepository<Quote> {
   constructor() {
@@ -17,10 +17,10 @@ export class QuoteRepository extends BaseRepository<Quote> {
     const offset = (page - 1) * limit;
     
     const countResult = await this.query(
-      'SELECT COUNT(*) FROM quotes WHERE service_request_id = $1',
+      'SELECT COUNT(*) as count FROM quotes WHERE service_request_id = $1',
       [serviceRequestId]
     );
-    const total = parseInt(countResult.rows[0].count);
+    const total = parseInt((countResult.rows[0] as any).count);
 
     const result = await this.query(
       `SELECT q.*, sp.business_name, sp.rating, sp.total_reviews, u.first_name, u.last_name 
@@ -50,10 +50,10 @@ export class QuoteRepository extends BaseRepository<Quote> {
     const offset = (page - 1) * limit;
     
     const countResult = await this.query(
-      'SELECT COUNT(*) FROM quotes WHERE provider_id = $1',
+      'SELECT COUNT(*) as count FROM quotes WHERE provider_id = $1',
       [providerId]
     );
-    const total = parseInt(countResult.rows[0].count);
+    const total = parseInt((countResult.rows[0] as any).count);
 
     const result = await this.query(
       `SELECT q.*, sr.title, sr.description, sr.urgency, u.first_name, u.last_name 
@@ -83,10 +83,10 @@ export class QuoteRepository extends BaseRepository<Quote> {
     const offset = (page - 1) * limit;
     
     const countResult = await this.query(
-      'SELECT COUNT(*) FROM quotes WHERE status = $1',
+      'SELECT COUNT(*) as count FROM quotes WHERE status = $1',
       [status]
     );
-    const total = parseInt(countResult.rows[0].count);
+    const total = parseInt((countResult.rows[0] as any).count);
 
     const result = await this.query(
       `SELECT q.*, sp.business_name, sr.title, u.first_name, u.last_name 
@@ -141,7 +141,7 @@ export class QuoteRepository extends BaseRepository<Quote> {
       `UPDATE quotes SET status = 'expired', updated_at = CURRENT_TIMESTAMP WHERE id IN (${placeholders})`,
       ids
     );
-    return result.rowCount;
+    return result.rowCount ?? 0;
   }
 
   /**

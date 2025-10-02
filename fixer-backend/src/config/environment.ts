@@ -25,8 +25,8 @@ export const config = {
   
   // JWT Configuration
   JWT: {
-    SECRET: process.env.JWT_SECRET || 'your-secret-key',
-    REFRESH_SECRET: process.env.JWT_REFRESH_SECRET || 'your-refresh-secret-key',
+    SECRET: process.env.JWT_SECRET || 'super-secret-jwt-key-for-development-only-change-in-production',
+    REFRESH_SECRET: process.env.JWT_REFRESH_SECRET || 'super-secret-refresh-key-for-development-only-change-in-production',
     ACCESS_TOKEN_EXPIRATION: process.env.JWT_ACCESS_TOKEN_EXPIRATION || '1h',
     REFRESH_TOKEN_EXPIRATION: process.env.JWT_REFRESH_TOKEN_EXPIRATION || '7d',
   },

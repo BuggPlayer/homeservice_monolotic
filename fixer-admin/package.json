@@ -25,6 +25,7 @@
     "@radix-ui/react-tabs": "^1.1.13",
     "@radix-ui/react-toast": "^1.2.15",
     "@radix-ui/react-tooltip": "^1.2.8",
+    "@reduxjs/toolkit": "^2.9.0",
     "@testing-library/dom": "^10.4.1",
     "@testing-library/jest-dom": "^6.9.0",
     "@testing-library/react": "^16.3.0",
@@ -39,6 +40,7 @@
     "lucide-react": "^0.544.0",
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
+    "react-redux": "^9.2.0",
     "react-router-dom": "^7.9.3",
     "react-scripts": "5.0.1",
     "recharts": "^3.2.1",
@@ -74,6 +76,7 @@
     ]
   },
   "devDependencies": {
+    "@craco/craco": "^7.1.0",
     "@storybook/addon-actions": "^9.0.8",
     "@storybook/addon-backgrounds": "^9.0.8",
     "@storybook/addon-controls": "^9.0.8",

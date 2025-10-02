@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import Joi from 'joi';
-import { ApiResponse } from '@/types';
+import { ApiResponse } from '../../types';
 
 // Validation schemas
 export const validationSchemas = {

@@ -1,7 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
-import { redisClient } from '../../config';
+import { redisClient } from '../../config/redis';
 import { config } from '../../config';
-import { ApiResponse } from '../types';
+import { ApiResponse } from '@/types';
 
 export interface RateLimitOptions {
   windowMs: number;

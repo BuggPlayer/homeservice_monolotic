@@ -17,10 +17,10 @@ export class BookingRepository extends BaseRepository<Booking> {
     const offset = (page - 1) * limit;
     
     const countResult = await this.query(
-      'SELECT COUNT(*) FROM bookings WHERE customer_id = $1',
+      'SELECT COUNT(*) as count FROM bookings WHERE customer_id = $1',
       [customerId]
     );
-    const total = parseInt(countResult.rows[0].count);
+    const total = parseInt((countResult.rows[0] as any).count);
 
     const result = await this.query(
       `SELECT b.*, sp.business_name, sr.title, q.amount, u.first_name, u.last_name 
@@ -52,10 +52,10 @@ export class BookingRepository extends BaseRepository<Booking> {
     const offset = (page - 1) * limit;
     
     const countResult = await this.query(
-      'SELECT COUNT(*) FROM bookings WHERE provider_id = $1',
+      'SELECT COUNT(*) as count FROM bookings WHERE provider_id = $1',
       [providerId]
     );
-    const total = parseInt(countResult.rows[0].count);
+    const total = parseInt((countResult.rows[0] as any).count);
 
     const result = await this.query(
       `SELECT b.*, sr.title, sr.description, q.amount, u.first_name, u.last_name 
@@ -86,10 +86,10 @@ export class BookingRepository extends BaseRepository<Booking> {
     const offset = (page - 1) * limit;
     
     const countResult = await this.query(
-      'SELECT COUNT(*) FROM bookings WHERE status = $1',
+      'SELECT COUNT(*) as count FROM bookings WHERE status = $1',
       [status]
     );
-    const total = parseInt(countResult.rows[0].count);
+    const total = parseInt((countResult.rows[0] as any).count);
 
     const result = await this.query(
       `SELECT b.*, sp.business_name, sr.title, u.first_name, u.last_name 
@@ -121,10 +121,10 @@ export class BookingRepository extends BaseRepository<Booking> {
     const offset = (page - 1) * limit;
     
     const countResult = await this.query(
-      'SELECT COUNT(*) FROM bookings WHERE scheduled_time BETWEEN $1 AND $2',
+      'SELECT COUNT(*) as count FROM bookings WHERE scheduled_time BETWEEN $1 AND $2',
       [startDate, endDate]
     );
-    const total = parseInt(countResult.rows[0].count);
+    const total = parseInt((countResult.rows[0] as any).count);
 
     const result = await this.query(
       `SELECT b.*, sp.business_name, sr.title, u.first_name, u.last_name 

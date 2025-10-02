@@ -1,4 +1,4 @@
-import { pool } from '@/config';
+import { pool } from '../../config/database';
 import { 
   Role, 
   Permission, 
@@ -326,31 +326,37 @@ export class RBACService {
       {
         name: SystemRoles.SUPER_ADMIN,
         description: 'Full system access',
+        permissions: [],
         is_active: true
       },
       {
         name: SystemRoles.ADMIN,
         description: 'Administrative access',
+        permissions: [],
         is_active: true
       },
       {
         name: SystemRoles.MODERATOR,
         description: 'Moderation access',
+        permissions: [],
         is_active: true
       },
       {
         name: SystemRoles.PROVIDER,
         description: 'Service provider access',
+        permissions: [],
         is_active: true
       },
       {
         name: SystemRoles.CUSTOMER,
         description: 'Customer access',
+        permissions: [],
         is_active: true
       },
       {
         name: SystemRoles.GUEST,
         description: 'Guest access',
+        permissions: [],
         is_active: true
       }
     ];

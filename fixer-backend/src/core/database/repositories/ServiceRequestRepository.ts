@@ -1,5 +1,5 @@
 import { BaseRepository } from './BaseRepository';
-import { ServiceRequest } from '@/types';
+import { ServiceRequest } from '../../../types';
 
 export class ServiceRequestRepository extends BaseRepository<ServiceRequest> {
   constructor() {
@@ -17,10 +17,10 @@ export class ServiceRequestRepository extends BaseRepository<ServiceRequest> {
     const offset = (page - 1) * limit;
     
     const countResult = await this.query(
-      'SELECT COUNT(*) FROM service_requests WHERE customer_id = $1',
+      'SELECT COUNT(*) as count FROM service_requests WHERE customer_id = $1',
       [customerId]
     );
-    const total = parseInt(countResult.rows[0].count);
+    const total = parseInt((countResult.rows[0] as any).count);
 
     const result = await this.query(
       'SELECT * FROM service_requests WHERE customer_id = $1 ORDER BY created_at DESC LIMIT $2 OFFSET $3',
@@ -44,10 +44,10 @@ export class ServiceRequestRepository extends BaseRepository<ServiceRequest> {
     const offset = (page - 1) * limit;
     
     const countResult = await this.query(
-      'SELECT COUNT(*) FROM service_requests WHERE status = $1',
+      'SELECT COUNT(*) as count FROM service_requests WHERE status = $1',
       [status]
     );
-    const total = parseInt(countResult.rows[0].count);
+    const total = parseInt((countResult.rows[0] as any).count);
 
     const result = await this.query(
       'SELECT * FROM service_requests WHERE status = $1 ORDER BY created_at DESC LIMIT $2 OFFSET $3',
@@ -71,10 +71,10 @@ export class ServiceRequestRepository extends BaseRepository<ServiceRequest> {
     const offset = (page - 1) * limit;
     
     const countResult = await this.query(
-      'SELECT COUNT(*) FROM service_requests WHERE service_type = $1',
+      'SELECT COUNT(*) as count FROM service_requests WHERE service_type = $1',
       [serviceType]
     );
-    const total = parseInt(countResult.rows[0].count);
+    const total = parseInt((countResult.rows[0] as any).count);
 
     const result = await this.query(
       'SELECT * FROM service_requests WHERE service_type = $1 ORDER BY created_at DESC LIMIT $2 OFFSET $3',
@@ -99,10 +99,10 @@ export class ServiceRequestRepository extends BaseRepository<ServiceRequest> {
     const offset = (page - 1) * limit;
     
     const countResult = await this.query(
-      'SELECT COUNT(*) FROM service_requests WHERE location->>\'city\' = $1 AND location->>\'state\' = $2',
+      'SELECT COUNT(*) as count FROM service_requests WHERE location->>\'city\' = $1 AND location->>\'state\' = $2',
       [city, state]
     );
-    const total = parseInt(countResult.rows[0].count);
+    const total = parseInt((countResult.rows[0] as any).count);
 
     const result = await this.query(
       'SELECT * FROM service_requests WHERE location->>\'city\' = $1 AND location->>\'state\' = $2 ORDER BY created_at DESC LIMIT $3 OFFSET $4',
@@ -126,10 +126,10 @@ export class ServiceRequestRepository extends BaseRepository<ServiceRequest> {
     const offset = (page - 1) * limit;
     
     const countResult = await this.query(
-      'SELECT COUNT(*) FROM service_requests WHERE urgency = $1',
+      'SELECT COUNT(*) as count FROM service_requests WHERE urgency = $1',
       [urgency]
     );
-    const total = parseInt(countResult.rows[0].count);
+    const total = parseInt((countResult.rows[0] as any).count);
 
     const result = await this.query(
       'SELECT * FROM service_requests WHERE urgency = $1 ORDER BY created_at DESC LIMIT $2 OFFSET $3',
@@ -200,10 +200,10 @@ export class ServiceRequestRepository extends BaseRepository<ServiceRequest> {
     }
 
     const countResult = await this.query(
-      `SELECT COUNT(*) FROM service_requests WHERE ${whereClause}`,
+      `SELECT COUNT(*) as count FROM service_requests WHERE ${whereClause}`,
       params
     );
-    const total = parseInt(countResult.rows[0].count);
+    const total = parseInt((countResult.rows[0] as any).count);
 
     const result = await this.query(
       `SELECT * FROM service_requests WHERE ${whereClause} ORDER BY created_at DESC LIMIT $${paramIndex} OFFSET $${paramIndex + 1}`,

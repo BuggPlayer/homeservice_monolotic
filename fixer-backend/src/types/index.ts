@@ -4,7 +4,7 @@ export interface User {
   email: string;
   phone: string;
   password_hash: string;
-  user_type: 'customer' | 'provider' | 'admin';
+  user_type: 'customer' | 'provider' | 'admin' | 'super_admin';
   first_name: string;
   last_name: string;
   profile_picture?: string;
@@ -218,7 +218,7 @@ export interface Wishlist {
 export interface JWTPayload {
   userId: string;
   email: string;
-  userType: 'customer' | 'provider' | 'admin';
+  userType: 'customer' | 'provider' | 'admin' | 'super_admin';
   iat?: number;
   exp?: number;
 }
@@ -255,7 +255,7 @@ export interface PaginatedResponse<T> {
 // Socket.IO Types
 export interface SocketUser {
   userId: string;
-  userType: 'customer' | 'provider' | 'admin';
+  userType: 'customer' | 'provider' | 'admin' | 'super_admin';
   socketId: string;
 }
 
@@ -276,4 +276,31 @@ export interface SocketNotification {
   data?: any;
   userId: string;
   timestamp: Date;
+}
+
+export interface Product {
+  id: string;
+  name: string;
+  description: string;
+  sku?: string;
+  category_id: string;
+  provider_id: string;
+  price: number;
+  stock_quantity: number;
+  status: 'active' | 'inactive' | 'discontinued';
+  is_featured?: boolean;
+  images: string[];
+  specifications?: Record<string, any>;
+  created_at: Date;
+  updated_at: Date;
+}
+
+export interface Category {
+  id: string;
+  name: string;
+  description: string;
+  parent_id?: string;
+  status: 'active' | 'inactive';
+  created_at: Date;
+  updated_at: Date;
 }

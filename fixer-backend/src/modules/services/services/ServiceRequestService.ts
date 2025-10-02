@@ -1,5 +1,5 @@
-import { ServiceRequestRepository } from '@/core/database/repositories';
-import { ServiceRequest } from '@/core/types';
+import { ServiceRequestRepository } from '../../../core/database/repositories';
+import { ServiceRequest } from '../../../core/types';
 import { 
   CreateServiceRequestRequest, 
   UpdateServiceRequestRequest, 
@@ -382,28 +382,28 @@ export class ServiceRequestService {
    */
   async getServiceRequestAnalytics() {
     // Get requests by status
-    const statusAnalytics = await this.serviceRequestRepository.query(`
+    const statusAnalytics = await this.serviceRequestRepository.executeQuery(`
       SELECT status, COUNT(*) as count 
       FROM service_requests 
       GROUP BY status
     `);
 
     // Get requests by service type
-    const serviceTypeAnalytics = await this.serviceRequestRepository.query(`
+    const serviceTypeAnalytics = await this.serviceRequestRepository.executeQuery(`
       SELECT service_type, COUNT(*) as count 
       FROM service_requests 
       GROUP BY service_type
     `);
 
     // Get requests by urgency
-    const urgencyAnalytics = await this.serviceRequestRepository.query(`
+    const urgencyAnalytics = await this.serviceRequestRepository.executeQuery(`
       SELECT urgency, COUNT(*) as count 
       FROM service_requests 
       GROUP BY urgency
     `);
 
     // Get requests by month (last 12 months)
-    const monthlyAnalytics = await this.serviceRequestRepository.query(`
+    const monthlyAnalytics = await this.serviceRequestRepository.executeQuery(`
       SELECT 
         DATE_TRUNC('month', created_at) as month,
         COUNT(*) as count
@@ -436,7 +436,7 @@ export class ServiceRequestService {
       RETURNING id
     `;
     
-    const result = await this.serviceRequestRepository.query(query, [status, serviceRequestIds]);
+    const result = await this.serviceRequestRepository.executeQuery(query, [status, serviceRequestIds]);
     
     return {
       updated: result.rows.length,
@@ -456,7 +456,7 @@ export class ServiceRequestService {
       RETURNING id
     `;
     
-    const result = await this.serviceRequestRepository.query(query);
+    const result = await this.serviceRequestRepository.executeQuery(query);
     
     return {
       archived: result.rows.length,

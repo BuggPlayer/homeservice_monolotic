@@ -1,5 +1,5 @@
 import { BaseRepository } from './BaseRepository';
-import { Call } from '@/types';
+import { Call } from '../../../types';
 
 export class CallRepository extends BaseRepository<Call> {
   constructor() {
@@ -17,10 +17,10 @@ export class CallRepository extends BaseRepository<Call> {
     const offset = (page - 1) * limit;
     
     const countResult = await this.query(
-      'SELECT COUNT(*) FROM calls WHERE customer_id = $1',
+      'SELECT COUNT(*) as count FROM calls WHERE customer_id = $1',
       [customerId]
     );
-    const total = parseInt(countResult.rows[0].count);
+    const total = parseInt((countResult.rows[0] as any).count);
 
     const result = await this.query(
       `SELECT c.*, sp.business_name, u.first_name, u.last_name 
@@ -50,10 +50,10 @@ export class CallRepository extends BaseRepository<Call> {
     const offset = (page - 1) * limit;
     
     const countResult = await this.query(
-      'SELECT COUNT(*) FROM calls WHERE provider_id = $1',
+      'SELECT COUNT(*) as count FROM calls WHERE provider_id = $1',
       [providerId]
     );
-    const total = parseInt(countResult.rows[0].count);
+    const total = parseInt((countResult.rows[0] as any).count);
 
     const result = await this.query(
       `SELECT c.*, u.first_name, u.last_name 
@@ -82,10 +82,10 @@ export class CallRepository extends BaseRepository<Call> {
     const offset = (page - 1) * limit;
     
     const countResult = await this.query(
-      'SELECT COUNT(*) FROM calls WHERE status = $1',
+      'SELECT COUNT(*) as count FROM calls WHERE status = $1',
       [status]
     );
-    const total = parseInt(countResult.rows[0].count);
+    const total = parseInt((countResult.rows[0] as any).count);
 
     const result = await this.query(
       `SELECT c.*, sp.business_name, u.first_name, u.last_name 
@@ -225,6 +225,6 @@ export class CallRepository extends BaseRepository<Call> {
       'DELETE FROM calls WHERE status = \'failed\' AND created_at < CURRENT_TIMESTAMP - INTERVAL \'$1 days\'',
       [daysOld]
     );
-    return result.rowCount;
+    return result.rowCount ?? 0;
   }
 }

@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import { UserService } from '../services/UserService';
-import { ApiResponse } from '@/core/types';
+import { ApiResponse } from '../../../core/types';
 import { 
   GetUsersRequest, 
   UpdateUserRequest 

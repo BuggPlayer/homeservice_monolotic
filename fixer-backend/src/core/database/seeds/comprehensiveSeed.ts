@@ -1,5 +1,5 @@
-import { pool } from '@/config';
-import { BcryptUtils } from '@/core/utils';
+import { pool } from '../../../config/database';
+import { BcryptUtils } from '../../../core/utils';
 import { 
   usersData, 
   defaultPassword 

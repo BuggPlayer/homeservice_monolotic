@@ -8,7 +8,7 @@ import {
   validateStatusUpdate,
   validatePagination,
   validateIdParam
-} from '@/core/middleware';
+} from '../../../core/middleware';
 import { 
   requireServiceRequestCreate,
   requireServiceRequestRead,
@@ -17,8 +17,8 @@ import {
   requireServiceRequestList,
   requireServiceRequestUpdateStatus,
   requireOwnershipOrPermission
-} from '@/core/rbac';
-import { RateLimiter } from '@/core/middleware/rateLimiter';
+} from '../../../core/rbac';
+import { RateLimiter } from '../../../core/middleware/rateLimiter';
 
 const router = Router();
 const serviceRequestController = new ServiceRequestController();

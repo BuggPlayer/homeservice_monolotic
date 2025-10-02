@@ -6,8 +6,8 @@ import {
   requireAdmin,
   validatePagination,
   validateIdParam
-} from '@/core/middleware';
-import { RateLimiter } from '@/core/middleware/rateLimiter';
+} from '../../../core/middleware';
+import { RateLimiter } from '../../../core/middleware/rateLimiter';
 
 const router = Router();
 const productController = new ProductController();

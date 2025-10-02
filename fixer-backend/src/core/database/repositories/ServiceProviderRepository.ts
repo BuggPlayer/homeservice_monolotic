@@ -1,5 +1,5 @@
 import { BaseRepository } from './BaseRepository';
-import { ServiceProvider } from '@/types';
+import { ServiceProvider } from '../../../types';
 
 export class ServiceProviderRepository extends BaseRepository<ServiceProvider> {
   constructor() {
@@ -28,10 +28,10 @@ export class ServiceProviderRepository extends BaseRepository<ServiceProvider> {
     const offset = (page - 1) * limit;
     
     const countResult = await this.query(
-      'SELECT COUNT(*) FROM service_providers WHERE verification_status = $1',
+      'SELECT COUNT(*) as count FROM service_providers WHERE verification_status = $1',
       [status]
     );
-    const total = parseInt(countResult.rows[0].count);
+    const total = parseInt((countResult.rows[0] as any).count);
 
     const result = await this.query(
       `SELECT sp.*, u.first_name, u.last_name, u.email, u.phone 
@@ -60,10 +60,10 @@ export class ServiceProviderRepository extends BaseRepository<ServiceProvider> {
     const offset = (page - 1) * limit;
     
     const countResult = await this.query(
-      'SELECT COUNT(*) FROM service_providers WHERE $1 = ANY(services_offered)',
+      'SELECT COUNT(*) as count FROM service_providers WHERE $1 = ANY(services_offered)',
       [serviceType]
     );
-    const total = parseInt(countResult.rows[0].count);
+    const total = parseInt((countResult.rows[0] as any).count);
 
     const result = await this.query(
       `SELECT sp.*, u.first_name, u.last_name, u.email, u.phone 
@@ -92,10 +92,10 @@ export class ServiceProviderRepository extends BaseRepository<ServiceProvider> {
     const offset = (page - 1) * limit;
     
     const countResult = await this.query(
-      'SELECT COUNT(*) FROM service_providers WHERE $1 = ANY(service_areas)',
+      'SELECT COUNT(*) as count FROM service_providers WHERE $1 = ANY(service_areas)',
       [location]
     );
-    const total = parseInt(countResult.rows[0].count);
+    const total = parseInt((countResult.rows[0] as any).count);
 
     const result = await this.query(
       `SELECT sp.*, u.first_name, u.last_name, u.email, u.phone 
@@ -168,12 +168,12 @@ export class ServiceProviderRepository extends BaseRepository<ServiceProvider> {
     }
 
     const countResult = await this.query(
-      `SELECT COUNT(*) FROM service_providers sp 
+      `SELECT COUNT(*) as count FROM service_providers sp 
        JOIN users u ON sp.user_id = u.id 
        WHERE ${whereClause}`,
       params
     );
-    const total = parseInt(countResult.rows[0].count);
+    const total = parseInt((countResult.rows[0] as any).count);
 
     const result = await this.query(
       `SELECT sp.*, u.first_name, u.last_name, u.email, u.phone 

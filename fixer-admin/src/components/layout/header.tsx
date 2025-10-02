@@ -13,6 +13,7 @@ import {
   MenuItem,
   useTheme,
   useMediaQuery,
+  Divider,
 } from '@mui/material'
 import {
   Menu as MenuIcon,
@@ -22,8 +23,12 @@ import {
   DarkMode as DarkModeIcon,
   LightMode as LightModeIcon,
   Settings as SettingsIcon,
+  Logout as LogoutIcon,
+  Person as PersonIcon,
 } from '@mui/icons-material'
 import { useTheme as useCustomTheme } from '../../contexts/theme-context'
+import { useAppSelector, useAppDispatch } from '../../store/hooks'
+import { logout } from '../../store/slices/authSlice'
 
 interface HeaderProps {
   onMenuClick: () => void
@@ -33,6 +38,8 @@ export function Header({ onMenuClick }: HeaderProps) {
   const theme = useTheme()
   const isMobile = useMediaQuery(theme.breakpoints.down('md'))
   const { isDarkMode, toggleTheme } = useCustomTheme()
+  const { user } = useAppSelector((state) => state.auth)
+  const dispatch = useAppDispatch()
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null)
 
   const handleProfileMenuOpen = (event: React.MouseEvent<HTMLElement>) => {
@@ -41,6 +48,11 @@ export function Header({ onMenuClick }: HeaderProps) {
 
   const handleMenuClose = () => {
     setAnchorEl(null)
+  }
+
+  const handleLogout = () => {
+    dispatch(logout())
+    handleMenuClose()
   }
 
   return (
@@ -113,10 +125,10 @@ export function Header({ onMenuClick }: HeaderProps) {
           <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, ml: 1 }}>
             <Box sx={{ display: { xs: 'none', sm: 'block' } }}>
               <Typography variant="body2" sx={{ fontWeight: 600 }}>
-                Admin User
+                {user?.firstName} {user?.lastName}
               </Typography>
               <Typography variant="caption" color="text.secondary">
-                admin@fixer.com
+                {user?.email}
               </Typography>
             </Box>
             <IconButton
@@ -129,10 +141,10 @@ export function Header({ onMenuClick }: HeaderProps) {
               color="inherit"
             >
               <Avatar
-                src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400"
+                src={user?.avatar}
                 sx={{ width: 32, height: 32 }}
               >
-                AU
+                {user?.firstName?.[0]}{user?.lastName?.[0]}
               </Avatar>
             </IconButton>
           </Box>
@@ -157,15 +169,28 @@ export function Header({ onMenuClick }: HeaderProps) {
           sx: { minWidth: 200 }
         }}
       >
+        <Box sx={{ p: 2, borderBottom: 1, borderColor: 'divider' }}>
+          <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
+            {user?.firstName} {user?.lastName}
+          </Typography>
+          <Typography variant="body2" color="text.secondary">
+            {user?.email}
+          </Typography>
+          <Typography variant="caption" color="primary">
+            {user?.role?.toUpperCase()}
+          </Typography>
+        </Box>
         <MenuItem onClick={handleMenuClose}>
-          <AccountIcon sx={{ mr: 2 }} />
+          <PersonIcon sx={{ mr: 2 }} />
           Profile
         </MenuItem>
         <MenuItem onClick={handleMenuClose}>
           <SettingsIcon sx={{ mr: 2 }} />
           Settings
         </MenuItem>
-        <MenuItem onClick={handleMenuClose}>
+        <Divider />
+        <MenuItem onClick={handleLogout}>
+          <LogoutIcon sx={{ mr: 2 }} />
           <Typography color="error">Logout</Typography>
         </MenuItem>
       </Menu>

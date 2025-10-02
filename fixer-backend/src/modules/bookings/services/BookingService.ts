@@ -1,4 +1,4 @@
-import { BookingRepository, QuoteRepository } from '@/core/database/repositories';
+import { BookingRepository, QuoteRepository } from '../../../core/database/repositories';
 import { Booking, Quote } from '@/types';
 import { 
   CreateBookingRequest, 
@@ -265,13 +265,13 @@ export class BookingService {
     const cancelledBookings = await this.bookingRepository.count('status = $1', ['cancelled']);
 
     // Get earnings statistics
-    const result = await this.bookingRepository.query(
+    const result = await this.bookingRepository.executeQuery(
       'SELECT SUM(total_amount) as total_earnings, AVG(total_amount) as avg_booking_value FROM bookings WHERE status = $1',
       ['completed']
     );
 
-    const totalEarnings = parseFloat(result.rows[0].total_earnings) || 0;
-    const averageBookingValue = parseFloat(result.rows[0].avg_booking_value) || 0;
+    const totalEarnings = parseFloat((result.rows[0] as any).total_earnings) || 0;
+    const averageBookingValue = parseFloat((result.rows[0] as any).avg_booking_value) || 0;
 
     return {
       totalBookings,
