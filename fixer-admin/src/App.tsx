@@ -18,6 +18,11 @@ import { Settings } from './pages/settings'
 import { Analytics } from './pages/analytics'
 import { Bookings } from './pages/bookings'
 import { Quotes } from './pages/quotes'
+import { Orders } from './pages/orders'
+import { Services } from './pages/services'
+import { Providers } from './pages/providers'
+import { Messages } from './pages/messages'
+import { PreviewDemo } from './pages/preview-demo'
 
 function App() {
   return (
@@ -34,15 +39,16 @@ function App() {
                       <Route path="/" element={<Dashboard />} />
                       <Route path="/products" element={<Products />} />
                       <Route path="/products/add" element={<AddProduct />} />
-                      <Route path="/services" element={<div>Services Page - Coming Soon</div>} />
+                      <Route path="/services" element={<Services />} />
                       <Route path="/requests" element={<ServiceRequests />} />
                       <Route path="/quotes" element={<Quotes />} />
                       <Route path="/bookings" element={<Bookings />} />
                       <Route path="/users" element={<Users />} />
-                      <Route path="/providers" element={<div>Providers Page - Coming Soon</div>} />
+                      <Route path="/providers" element={<Providers />} />
                       <Route path="/analytics" element={<Analytics />} />
-                      <Route path="/messages" element={<div>Messages Page - Coming Soon</div>} />
-                      <Route path="/orders" element={<div>Orders Page - Coming Soon</div>} />
+                      <Route path="/messages" element={<Messages />} />
+                      <Route path="/orders" element={<Orders />} />
+                      <Route path="/preview-demo" element={<PreviewDemo />} />
                       <Route path="/settings" element={<Settings />} />
                     </Routes>
                   </MainLayout>

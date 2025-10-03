@@ -1,12 +1,73 @@
-// Export all UI components
+// Export all UI components with explicit exports to avoid conflicts
 export * from './button'
 export * from './input'
-export * from './card'
 export * from './DataDisplay'
-export * from './Feedback'
-export * from './Navigation'
-export * from './Layout'
-export * from './Utility'
 export * from './Form'
 
-// All components are exported via the individual files above
+// Export specific components from files with conflicts
+export { 
+  Card, 
+  CardWithHeader,
+  CardWithMedia,
+  StatsCard,
+  InfoCard,
+  // Use CustomPaper from card.tsx (not Layout.tsx)
+  CustomPaper as CardCustomPaper
+} from './card'
+export type { CustomPaperProps as CardCustomPaperProps } from './card'
+
+export { 
+  CustomAlert,
+  CustomSnackbar,
+  CustomDialog,
+  ConfirmationDialog,
+  Loading,
+  LoadingOverlay,
+  CustomSkeleton,
+  CustomStepper,
+  CustomAccordion,
+  CustomTabs
+} from './Feedback'
+export type { 
+  CustomAlertProps,
+  CustomSnackbarProps,
+  CustomDialogProps,
+  ConfirmationDialogProps,
+  LoadingProps,
+  LoadingOverlayProps,
+  CustomSkeletonProps,
+  CustomStepperProps,
+  CustomAccordionProps,
+  CustomTabsProps
+} from './Feedback'
+
+export { 
+  CustomAppBar,
+  CustomStepper as NavigationCustomStepper
+} from './Navigation'
+export type { 
+  CustomAppBarProps,
+  CustomStepperProps as NavigationCustomStepperProps
+} from './Navigation'
+
+export { 
+  CustomContainer,
+  CustomGrid,
+  CustomBox,
+  CustomStack,
+  CustomDivider,
+  CustomPaper
+} from './Layout'
+export type { 
+  CustomContainerProps,
+  CustomGridProps,
+  CustomBoxProps,
+  CustomStackProps,
+  CustomDividerProps,
+  CustomPaperProps
+} from './Layout'
+
+export { 
+  Loading as UtilityLoading,
+  LoadingOverlay as UtilityLoadingOverlay
+} from './Utility'

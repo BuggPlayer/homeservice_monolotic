@@ -1,16 +1,31 @@
 module.exports = {
   webpack: {
-    configure: (webpackConfig) => {
-      // Increase memory limit for TypeScript checking
-      webpackConfig.plugins = webpackConfig.plugins || [];
+    configure: (webpackConfig, { env, paths }) => {
+      // Completely remove ForkTsCheckerWebpackPlugin in development to prevent memory issues
+      if (env === 'development') {
+        webpackConfig.plugins = webpackConfig.plugins.filter(
+          plugin => plugin.constructor.name !== 'ForkTsCheckerWebpackPlugin'
+        );
+      }
       
-      // Find ForkTsCheckerWebpackPlugin and increase memory limit
-      const forkTsCheckerPlugin = webpackConfig.plugins.find(
-        plugin => plugin.constructor.name === 'ForkTsCheckerWebpackPlugin'
-      );
+      // Additional webpack optimizations for memory
+      webpackConfig.optimization = {
+        ...webpackConfig.optimization,
+        splitChunks: {
+          chunks: 'all',
+          cacheGroups: {
+            vendor: {
+              test: /[\\/]node_modules[\\/]/,
+              name: 'vendors',
+              chunks: 'all',
+            },
+          },
+        },
+      };
       
-      if (forkTsCheckerPlugin) {
-        forkTsCheckerPlugin.options.memoryLimit = 4096;
+      // Disable source maps in development to save memory
+      if (env === 'development') {
+        webpackConfig.devtool = false;
       }
       
       return webpackConfig;
@@ -18,6 +33,16 @@ module.exports = {
   },
   devServer: {
     // Increase memory limit for dev server
-    maxMemory: 4096,
+    maxMemory: 8192,
+    // Additional dev server optimizations
+    compress: true,
+    hot: true,
+    liveReload: false,
+  },
+  // Add babel configuration for better performance
+  babel: {
+    plugins: [
+      // Add any babel plugins that might help with performance
+    ],
   },
 };

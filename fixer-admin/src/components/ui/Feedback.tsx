@@ -44,13 +44,12 @@ import {
   TabsProps,
   Tab,
   TabProps,
-  TabPanel,
-  TabPanelProps,
+  Box,
 } from '@mui/material'
 import { styled } from '@mui/material/styles'
 
 // Styled Alert
-const StyledAlert = styled(Alert)(({ theme, severity }) => ({
+const StyledAlert = styled(Alert)(({ theme }) => ({
   borderRadius: theme.shape.borderRadius,
   '& .MuiAlert-icon': {
     fontSize: '1.25rem',
@@ -70,7 +69,7 @@ const StyledSnackbar = styled(Snackbar)(({ theme }) => ({
 // Styled Dialog
 const StyledDialog = styled(Dialog)(({ theme }) => ({
   '& .MuiDialog-paper': {
-    borderRadius: theme.shape.borderRadius * 2,
+    borderRadius: (theme.shape.borderRadius as number) * 2,
     boxShadow: theme.shadows[24],
   },
 }))
@@ -100,7 +99,7 @@ export const CustomAlert: React.FC<CustomAlertProps> = ({
     <StyledAlert
       variant={variant}
       severity={severity}
-      action={action || (closable && onClose ? { onClose } : undefined)}
+      action={action}
       sx={sx}
       {...props}
     >
@@ -355,12 +354,13 @@ export const CustomStepper: React.FC<CustomStepperProps> = ({
 }
 
 // Accordion Component
-export interface CustomAccordionProps extends AccordionProps {
+export interface CustomAccordionProps {
   title: string
   content: React.ReactNode
   expanded?: boolean
   onChange?: (event: React.SyntheticEvent, isExpanded: boolean) => void
   disabled?: boolean
+  sx?: any
 }
 
 export const CustomAccordion: React.FC<CustomAccordionProps> = ({
@@ -396,7 +396,7 @@ export interface CustomTabsProps extends TabsProps {
     label: string
     value: string | number
     disabled?: boolean
-    icon?: React.ReactNode
+    icon?: React.ReactElement
   }>
   value: string | number
   onChange: (event: React.SyntheticEvent, newValue: string | number) => void
@@ -436,26 +436,35 @@ export const CustomTabs: React.FC<CustomTabsProps> = ({
 }
 
 // Tab Panel Component
-export interface CustomTabPanelProps extends TabPanelProps {
+export interface CustomTabPanelProps {
   value: string | number
   index: string | number
   children: React.ReactNode
+  sx?: any
 }
 
 export const CustomTabPanel: React.FC<CustomTabPanelProps> = ({
   value,
   index,
   children,
+  sx,
   ...props
 }) => {
   return (
-    <TabPanel
-      value={value}
-      index={index}
+    <Box
+      role="tabpanel"
+      hidden={value !== index}
+      id={`simple-tabpanel-${index}`}
+      aria-labelledby={`simple-tab-${index}`}
+      sx={sx}
       {...props}
     >
-      {children}
-    </TabPanel>
+      {value === index && (
+        <Box sx={{ p: 3 }}>
+          {children}
+        </Box>
+      )}
+    </Box>
   )
 }
 
@@ -483,5 +492,4 @@ export {
   AccordionDetails as BaseAccordionDetails,
   Tabs as BaseTabs,
   Tab as BaseTab,
-  TabPanel as BaseTabPanel,
 }

@@ -298,7 +298,9 @@
         "phone": "+1-555-1001",
         "first_name": "Mike",
         "last_name": "Johnson",
-        "profile_picture": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400"
+        "profile_picture": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400",
+        "is_verified": true,
+        "user_type": "provider"
       }
     },
     {
@@ -318,7 +320,9 @@
         "phone": "+1-555-1002",
         "first_name": "David",
         "last_name": "Chen",
-        "profile_picture": "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400"
+        "profile_picture": "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400",
+        "is_verified": true,
+        "user_type": "provider"
       }
     },
     {
@@ -338,7 +342,9 @@
         "phone": "+1-555-1003",
         "first_name": "Robert",
         "last_name": "Martinez",
-        "profile_picture": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400"
+        "profile_picture": "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400",
+        "is_verified": true,
+        "user_type": "provider"
       }
     }
   ],
@@ -492,6 +498,41 @@
       "created_at": "2024-01-08T09:15:00Z"
     }
   ],
+  "users": [
+    {
+      "id": 1,
+      "email": "admin@fixer.com",
+      "phone": "+1-555-0001",
+      "first_name": "Admin",
+      "last_name": "User",
+      "profile_picture": "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400",
+      "is_verified": true,
+      "user_type": "admin",
+      "created_at": "2024-01-01T00:00:00Z"
+    },
+    {
+      "id": 2,
+      "email": "customer@fixer.com",
+      "phone": "+1-555-0002",
+      "first_name": "John",
+      "last_name": "Doe",
+      "profile_picture": "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400",
+      "is_verified": true,
+      "user_type": "customer",
+      "created_at": "2024-01-02T00:00:00Z"
+    },
+    {
+      "id": 3,
+      "email": "customer2@fixer.com",
+      "phone": "+1-555-0003",
+      "first_name": "Jane",
+      "last_name": "Smith",
+      "profile_picture": "https://images.unsplash.com/photo-1494790108755-2616b612b786?w=400",
+      "is_verified": true,
+      "user_type": "customer",
+      "created_at": "2024-01-03T00:00:00Z"
+    }
+  ],
   "analytics": {
     "totalProducts": 25,
     "totalCategories": 8,
@@ -523,6 +564,29 @@
         "message": "New service request for HVAC repair",
         "timestamp": "2024-01-14T08:45:00Z"
       }
-    ]
+    ],
+    "monthlyRevenue": [
+      { "month": "Jan", "revenue": 15420.50 },
+      { "month": "Feb", "revenue": 18230.75 },
+      { "month": "Mar", "revenue": 16890.25 },
+      { "month": "Apr", "revenue": 19540.00 },
+      { "month": "May", "revenue": 22100.50 },
+      { "month": "Jun", "revenue": 20875.25 }
+    ],
+    "serviceRequestStats": {
+      "open": 3,
+      "quoted": 4,
+      "booked": 2,
+      "in_progress": 1,
+      "completed": 8,
+      "cancelled": 1
+    },
+    "providerStats": {
+      "verified": 12,
+      "pending": 2,
+      "rejected": 1,
+      "averageRating": 4.7,
+      "totalReviews": 456
+    }
   }
 }

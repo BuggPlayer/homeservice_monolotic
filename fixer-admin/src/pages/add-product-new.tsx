@@ -20,15 +20,15 @@ import {
 import {
   Save as SaveIcon,
   ArrowBack as ArrowBackIcon,
-  Inventory as PackageIcon,
-  AttachMoney as DollarIcon,
-  Image as ImageIcon,
-  Scale as ScaleIcon,
-  Tag as TagIcon,
-  Description as DescriptionIcon,
-  Security as SecurityIcon,
-  CheckCircle as CheckIcon,
-  Refresh as RefreshIcon,
+  PackageIcon,
+  DollarIcon,
+  ImageIcon,
+  ScaleIcon,
+  TagIcon,
+  DescriptionIcon,
+  SecurityIcon,
+  CheckIcon,
+  RefreshIcon,
 } from '@mui/icons-material'
 import { Product, Category } from '../types'
 import { formatCurrency } from '../lib/utils'
@@ -414,15 +414,15 @@ export function AddProduct() {
         <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
           <Box sx={{ display: 'flex', alignItems: 'center' }}>
             <IconButton sx={{ mr: 2, color: 'primary.main' }}>
-          <ArrowBackIcon />
-        </IconButton>
-        <Box>
+              <ArrowBackIcon />
+            </IconButton>
+            <Box>
               <Typography variant="h4" sx={{ fontWeight: 700, mb: 0.5, color: 'text.primary' }}>
                 Create New Product
-          </Typography>
+              </Typography>
               <Typography variant="body2" color="text.secondary">
                 Build a comprehensive product listing with all necessary details
-          </Typography>
+              </Typography>
             </Box>
           </Box>
           <Box sx={{ display: 'flex', gap: 1 }}>
@@ -466,24 +466,24 @@ export function AddProduct() {
         </Card>
 
         <Box sx={{ display: 'flex', gap: 3, flexDirection: { xs: 'column', lg: 'row' } }}>
-        {/* Main Form */}
+          {/* Main Form */}
           <Box sx={{ flex: { xs: 1, lg: 2 } }}>
-          <Stack spacing={3}>
+            <Stack spacing={3}>
               {/* Step 1: Basic Information */}
               {activeStep === 0 && (
                 <Fade in={true}>
-            <Card>
-              <CardContent>
+                  <Card>
+                    <CardContent>
                       <Typography variant="h6" sx={{ mb: 3, display: 'flex', alignItems: 'center', gap: 1, color: 'primary.main' }}>
-                  <PackageIcon />
-                  Basic Information
-                </Typography>
-                
+                        <PackageIcon />
+                        Basic Information
+                      </Typography>
+                      
                       <Stack spacing={3}>
                         <FormField
-                      label="Product Name"
-                      value={formData.name}
-                      onChange={handleInputChange('name')}
+                          label="Product Name"
+                          value={formData.name}
+                          onChange={handleInputChange('name')}
                           error={errors.name}
                           helperText="Enter a clear, descriptive product name"
                           placeholder="e.g., Professional Wireless Headphones"
@@ -497,14 +497,14 @@ export function AddProduct() {
                           error={errors.shortDescription}
                           helperText="Brief description for product cards and search results"
                           placeholder="Brief, compelling description of your product"
-                      multiline
+                          multiline
                           rows={2}
                           required
                         />
                         
                         <RichTextField
                           label="Detailed Description"
-                      value={formData.description}
+                          value={formData.description}
                           onChange={handleDescriptionChange}
                           error={errors.description}
                           helperText="Create a detailed, compelling description of your product"
@@ -546,9 +546,9 @@ export function AddProduct() {
                           </Box>
                           <Box sx={{ flex: 1 }}>
                             <SelectField
-                        label="Category"
+                              label="Category"
                               value={formData.categoryId}
-                        onChange={handleInputChange('categoryId')}
+                              onChange={handleInputChange('categoryId')}
                               options={categories.map(category => ({
                                 value: category.id,
                                 label: category.name
@@ -561,9 +561,9 @@ export function AddProduct() {
                         </Box>
                         
                         <SelectField
-                        label="Provider"
+                          label="Provider"
                           value={formData.providerId}
-                        onChange={handleInputChange('providerId')}
+                          onChange={handleInputChange('providerId')}
                           options={providers.map(provider => ({
                             value: provider.id,
                             label: provider.business_name
@@ -571,28 +571,28 @@ export function AddProduct() {
                           helperText="Select service provider"
                         />
                       </Stack>
-              </CardContent>
-            </Card>
+                    </CardContent>
+                  </Card>
                 </Fade>
               )}
 
               {/* Step 2: Pricing & Inventory */}
               {activeStep === 1 && (
                 <Fade in={true}>
-            <Card>
-              <CardContent>
+                  <Card>
+                    <CardContent>
                       <Typography variant="h6" sx={{ mb: 3, display: 'flex', alignItems: 'center', gap: 1, color: 'primary.main' }}>
-                  <DollarIcon />
-                  Pricing & Inventory
-                </Typography>
-                
+                        <DollarIcon />
+                        Pricing & Inventory
+                      </Typography>
+                      
                       <Stack spacing={3}>
                         <Box sx={{ display: 'flex', gap: 2 }}>
                           <Box sx={{ flex: 1 }}>
                             <FormField
                               label="Selling Price"
-                      value={formData.price}
-                      onChange={handleInputChange('price')}
+                              value={formData.price}
+                              onChange={handleInputChange('price')}
                               error={errors.price}
                               helperText="Customer-facing price"
                               type="number"
@@ -602,9 +602,9 @@ export function AddProduct() {
                           </Box>
                           <Box sx={{ flex: 1 }}>
                             <FormField
-                      label="Original Price"
-                      value={formData.originalPrice}
-                      onChange={handleInputChange('originalPrice')}
+                              label="Original Price"
+                              value={formData.originalPrice}
+                              onChange={handleInputChange('originalPrice')}
                               error={errors.originalPrice}
                               helperText="MSRP or regular price"
                               type="number"
@@ -626,20 +626,20 @@ export function AddProduct() {
                         <Box sx={{ display: 'flex', gap: 2 }}>
                           <Box sx={{ flex: 1 }}>
                             <FormField
-                      label="SKU"
-                      value={formData.sku}
-                      onChange={handleInputChange('sku')}
+                              label="SKU"
+                              value={formData.sku}
+                              onChange={handleInputChange('sku')}
                               error={errors.sku}
                               helperText="Unique product identifier"
-                      placeholder="e.g., PROD-001"
+                              placeholder="e.g., PROD-001"
                               required
                             />
                           </Box>
                           <Box sx={{ flex: 1 }}>
                             <FormField
-                      label="Stock Quantity"
-                      value={formData.stockQuantity}
-                      onChange={handleInputChange('stockQuantity')}
+                              label="Stock Quantity"
+                              value={formData.stockQuantity}
+                              onChange={handleInputChange('stockQuantity')}
                               error={errors.stockQuantity}
                               helperText="Available inventory"
                               type="number"
@@ -661,20 +661,20 @@ export function AddProduct() {
                             <SwitchField
                               label="Track Inventory"
                               value={formData.trackInventory}
-                              onChange={(value: boolean) => setFormData((prev: ProductFormData) => ({ ...prev, trackInventory: value }))}
+                              onChange={(value) => setFormData(prev => ({ ...prev, trackInventory: value }))}
                               helperText="Enable inventory tracking"
                             />
                             <SwitchField
                               label="Allow Backorder"
                               value={formData.allowBackorder}
-                              onChange={(value: boolean) => setFormData((prev: ProductFormData) => ({ ...prev, allowBackorder: value }))}
+                              onChange={(value) => setFormData(prev => ({ ...prev, allowBackorder: value }))}
                               helperText="Allow orders when out of stock"
                             />
                           </Box>
                         </Box>
                       </Stack>
-              </CardContent>
-            </Card>
+                    </CardContent>
+                  </Card>
                 </Fade>
               )}
 
@@ -691,8 +691,8 @@ export function AddProduct() {
                       helperText="Upload high-quality product images"
                     />
 
-            <Card>
-              <CardContent>
+                    <Card>
+                      <CardContent>
                         <Typography variant="h6" sx={{ mb: 3, display: 'flex', alignItems: 'center', gap: 1, color: 'primary.main' }}>
                           SEO & Marketing
                         </Typography>
@@ -725,7 +725,7 @@ export function AddProduct() {
                           <TagField
                             label="SEO Keywords"
                             value={formData.seoKeywords}
-                              onChange={(keywords: string[]) => setFormData((prev: ProductFormData) => ({ ...prev, seoKeywords: keywords }))}
+                            onChange={(keywords) => setFormData(prev => ({ ...prev, seoKeywords: keywords }))}
                             placeholder="Add keywords for better search visibility"
                             suggestions={['premium', 'quality', 'professional', 'wireless', 'bluetooth']}
                             maxTags={20}
@@ -736,19 +736,19 @@ export function AddProduct() {
                             <SwitchField
                               label="Featured Product"
                               value={formData.isFeatured}
-                              onChange={(value: boolean) => setFormData((prev: ProductFormData) => ({ ...prev, isFeatured: value }))}
+                              onChange={(value) => setFormData(prev => ({ ...prev, isFeatured: value }))}
                               helperText="Show on homepage and featured sections"
                             />
                             <SwitchField
                               label="New Product"
                               value={formData.isNew}
-                              onChange={(value: boolean) => setFormData((prev: ProductFormData) => ({ ...prev, isNew: value }))}
+                              onChange={(value) => setFormData(prev => ({ ...prev, isNew: value }))}
                               helperText="Mark as new product"
                             />
                             <SwitchField
                               label="On Sale"
                               value={formData.isOnSale}
-                              onChange={(value: boolean) => setFormData((prev: ProductFormData) => ({ ...prev, isOnSale: value }))}
+                              onChange={(value) => setFormData(prev => ({ ...prev, isOnSale: value }))}
                               helperText="Show sale badge"
                             />
                           </Box>
@@ -766,17 +766,17 @@ export function AddProduct() {
                     <Card>
                       <CardContent>
                         <Typography variant="h6" sx={{ mb: 3, display: 'flex', alignItems: 'center', gap: 1, color: 'primary.main' }}>
-                  <ScaleIcon />
-                  Physical Properties
-                </Typography>
-                
+                          <ScaleIcon />
+                          Physical Properties
+                        </Typography>
+                        
                         <Stack spacing={3}>
                           <Box sx={{ display: 'flex', gap: 2 }}>
                             <Box sx={{ flex: 1 }}>
                               <FormField
                                 label="Weight"
-                      value={formData.weight}
-                      onChange={handleInputChange('weight')}
+                                value={formData.weight}
+                                onChange={handleInputChange('weight')}
                                 error={errors.weight}
                                 helperText="Product weight"
                                 type="number"
@@ -787,7 +787,7 @@ export function AddProduct() {
                               <SelectField
                                 label="Weight Unit"
                                 value={formData.weightUnit}
-                                onChange={(value: string) => setFormData((prev: ProductFormData) => ({ ...prev, weightUnit: value }))}
+                                onChange={(value) => setFormData(prev => ({ ...prev, weightUnit: value }))}
                                 options={[
                                   { value: 'lbs', label: 'Pounds (lbs)' },
                                   { value: 'kg', label: 'Kilograms (kg)' },
@@ -805,58 +805,58 @@ export function AddProduct() {
                           <Box sx={{ display: 'flex', gap: 2 }}>
                             <Box sx={{ flex: 1 }}>
                               <FormField
-                      label="Length"
-                      value={formData.dimensions.length}
-                      onChange={handleNestedInputChange('dimensions', 'length')}
+                                label="Length"
+                                value={formData.dimensions.length}
+                                onChange={handleNestedInputChange('dimensions', 'length')}
                                 error={errors.dimensions}
                                 type="number"
                               />
                             </Box>
                             <Box sx={{ flex: 1 }}>
                               <FormField
-                      label="Width"
-                      value={formData.dimensions.width}
-                      onChange={handleNestedInputChange('dimensions', 'width')}
+                                label="Width"
+                                value={formData.dimensions.width}
+                                onChange={handleNestedInputChange('dimensions', 'width')}
                                 error={errors.dimensions}
                                 type="number"
                               />
                             </Box>
                             <Box sx={{ flex: 1 }}>
                               <FormField
-                      label="Height"
-                      value={formData.dimensions.height}
-                      onChange={handleNestedInputChange('dimensions', 'height')}
+                                label="Height"
+                                value={formData.dimensions.height}
+                                onChange={handleNestedInputChange('dimensions', 'height')}
                                 error={errors.dimensions}
                                 type="number"
-                    />
+                              />
                             </Box>
                           </Box>
                         </Stack>
-              </CardContent>
-            </Card>
+                      </CardContent>
+                    </Card>
 
-            <Card>
-              <CardContent>
+                    <Card>
+                      <CardContent>
                         <Typography variant="h6" sx={{ mb: 3, display: 'flex', alignItems: 'center', gap: 1, color: 'primary.main' }}>
                           Shipping & Handling
-                </Typography>
-                
+                        </Typography>
+                        
                         <Stack spacing={3}>
                           <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
                             <SwitchField
                               label="Requires Shipping"
                               value={formData.requiresShipping}
-                              onChange={(value: boolean) => setFormData((prev: ProductFormData) => ({ ...prev, requiresShipping: value }))}
+                              onChange={(value) => setFormData(prev => ({ ...prev, requiresShipping: value }))}
                               helperText="Product requires physical shipping"
                             />
                             <SwitchField
                               label="Free Shipping"
                               value={formData.freeShipping}
-                              onChange={(value: boolean) => setFormData((prev: ProductFormData) => ({ ...prev, freeShipping: value }))}
+                              onChange={(value) => setFormData(prev => ({ ...prev, freeShipping: value }))}
                               helperText="Offer free shipping for this product"
                             />
-                </Box>
-                
+                          </Box>
+                          
                           <Box sx={{ display: 'flex', gap: 2 }}>
                             <Box sx={{ flex: 1 }}>
                               <FormField
@@ -866,12 +866,12 @@ export function AddProduct() {
                                 helperText="Days to prepare for shipment"
                                 type="number"
                               />
-                </Box>
+                            </Box>
                             <Box sx={{ flex: 1 }}>
                               <SelectField
                                 label="Shipping Class"
                                 value={formData.shippingClass}
-                                onChange={(value: string) => setFormData((prev: ProductFormData) => ({ ...prev, shippingClass: value }))}
+                                onChange={(value) => setFormData(prev => ({ ...prev, shippingClass: value }))}
                                 options={[
                                   { value: 'standard', label: 'Standard' },
                                   { value: 'express', label: 'Express' },
@@ -883,59 +883,59 @@ export function AddProduct() {
                             </Box>
                           </Box>
                         </Stack>
-              </CardContent>
-            </Card>
+                      </CardContent>
+                    </Card>
 
-            <Card>
-              <CardContent>
+                    <Card>
+                      <CardContent>
                         <Typography variant="h6" sx={{ mb: 3, display: 'flex', alignItems: 'center', gap: 1, color: 'primary.main' }}>
                           <TagIcon />
                           Tags & Collections
-                </Typography>
-                
+                        </Typography>
+                        
                         <Stack spacing={3}>
                           <TagField
                             label="Product Tags"
                             value={formData.tags}
-                              onChange={(tags: string[]) => setFormData((prev: ProductFormData) => ({ ...prev, tags }))}
+                            onChange={(tags) => setFormData(prev => ({ ...prev, tags }))}
                             placeholder="Add tags to categorize your product"
                             suggestions={['electronics', 'wireless', 'premium', 'bluetooth', 'headphones']}
                             maxTags={20}
                             helperText="Add tags to help customers find your product"
                           />
-                </Stack>
-              </CardContent>
-            </Card>
-          </Stack>
+                        </Stack>
+                      </CardContent>
+                    </Card>
+                  </Stack>
                 </Fade>
               )}
 
               {/* Step 5: Advanced Settings */}
               {activeStep === 4 && (
                 <Fade in={true}>
-          <Stack spacing={3}>
+                  <Stack spacing={3}>
                     <SpecificationField
                       label="Product Specifications"
                       value={formData.specifications}
-                              onChange={(specifications: Specification[]) => setFormData((prev: ProductFormData) => ({ ...prev, specifications }))}
+                      onChange={(specifications) => setFormData(prev => ({ ...prev, specifications }))}
                       groups={['General', 'Technical', 'Physical', 'Warranty', 'Other']}
                       maxSpecifications={50}
                       helperText="Add detailed product specifications"
                     />
 
-            <Card>
-              <CardContent>
+                    <Card>
+                      <CardContent>
                         <Typography variant="h6" sx={{ mb: 3, display: 'flex', alignItems: 'center', gap: 1, color: 'primary.main' }}>
                           <SecurityIcon />
                           Status & Visibility
-                </Typography>
-                
+                        </Typography>
+                        
                         <Stack spacing={3}>
                           <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
                             <SwitchField
                               label="Product Active"
                               value={formData.isActive}
-                              onChange={(value: boolean) => setFormData((prev: ProductFormData) => ({ ...prev, isActive: value }))}
+                              onChange={(value) => setFormData(prev => ({ ...prev, isActive: value }))}
                               helperText="Make product visible to customers"
                             />
                           </Box>
@@ -945,7 +945,7 @@ export function AddProduct() {
                               <SelectField
                                 label="Visibility"
                                 value={formData.visibility}
-                                onChange={(value: string) => setFormData((prev: ProductFormData) => ({ ...prev, visibility: value as any }))}
+                                onChange={(value) => setFormData(prev => ({ ...prev, visibility: value }))}
                                 options={[
                                   { value: 'public', label: 'Public' },
                                   { value: 'private', label: 'Private' },
@@ -985,9 +985,9 @@ export function AddProduct() {
                               />
                             </Box>
                           </Box>
-                </Stack>
-              </CardContent>
-            </Card>
+                        </Stack>
+                      </CardContent>
+                    </Card>
                   </Stack>
                 </Fade>
               )}
@@ -995,13 +995,13 @@ export function AddProduct() {
               {/* Step 6: Review & Publish */}
               {activeStep === 5 && (
                 <Fade in={true}>
-            <Card>
-              <CardContent>
+                  <Card>
+                    <CardContent>
                       <Typography variant="h6" sx={{ mb: 3, display: 'flex', alignItems: 'center', gap: 1, color: 'primary.main' }}>
                         <CheckIcon />
                         Review & Publish
-                </Typography>
-                
+                      </Typography>
+                      
                       <Alert severity="info" sx={{ mb: 3 }}>
                         Review all information before publishing your product. You can always edit these details later.
                       </Alert>
@@ -1012,13 +1012,13 @@ export function AddProduct() {
                           <Box sx={{ p: 2, bgcolor: 'grey.50', borderRadius: 1 }}>
                             <Typography variant="subtitle1" sx={{ fontWeight: 600, mb: 1 }}>
                               {formData.name || 'Untitled Product'}
-                  </Typography>
+                            </Typography>
                             <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
                               {formData.shortDescription || 'No description provided'}
                             </Typography>
                             <Typography variant="h6" color="primary">
                               ${formData.price || 0}
-                  </Typography>
+                            </Typography>
                           </Box>
                         </Box>
                         
@@ -1042,9 +1042,9 @@ export function AddProduct() {
                             </Typography>
                           </Box>
                         </Box>
-                </Box>
-              </CardContent>
-            </Card>
+                      </Box>
+                    </CardContent>
+                  </Card>
                 </Fade>
               )}
 
@@ -1057,13 +1057,13 @@ export function AddProduct() {
                 >
                   Previous
                 </Button>
-                  <Button
-                    variant="contained"
+                <Button
+                  variant="contained"
                   onClick={() => setActiveStep(Math.min(steps.length - 1, activeStep + 1))}
                   disabled={activeStep === steps.length - 1}
                 >
                   Next
-                  </Button>
+                </Button>
               </Box>
             </Stack>
           </Box>
@@ -1095,26 +1095,26 @@ export function AddProduct() {
                     Quick Actions
                   </Typography>
                   <Stack spacing={1}>
-                  <Button
-                    variant="outlined"
-                    fullWidth
-                    startIcon={<SaveIcon />}
+                    <Button
+                      variant="outlined"
+                      fullWidth
+                      startIcon={<SaveIcon />}
                       onClick={handleSaveDraft}
-                  >
+                    >
                       Save Draft
-                  </Button>
-                  <Button
-                    variant="text"
-                    fullWidth
+                    </Button>
+                    <Button
+                      variant="text"
+                      fullWidth
                       startIcon={<RefreshIcon />}
-                    onClick={() => setFormData(initialFormData)}
-                  >
-                    Reset Form
-                  </Button>
-                </Stack>
-              </CardContent>
-            </Card>
-          </Stack>
+                      onClick={() => setFormData(initialFormData)}
+                    >
+                      Reset Form
+                    </Button>
+                  </Stack>
+                </CardContent>
+              </Card>
+            </Stack>
           </Box>
         </Box>
       </Box>

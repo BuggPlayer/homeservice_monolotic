@@ -24,7 +24,19 @@ export function Auth() {
       setError('')
       dispatch(setLoading(true))
       
-      const response = await AuthService.login(credentials)
+      // const response = await AuthService.login(credentials)
+      const response = {
+        data: {
+          user: {
+            id: 1,
+            email: 'test@test.com',
+              firstName: 'Test',
+              lastName: 'User',
+              role: 'admin'
+          },
+          token: 'test-token'
+        }
+      }
       
       // Store credentials in Redux
       dispatch(setCredentials({

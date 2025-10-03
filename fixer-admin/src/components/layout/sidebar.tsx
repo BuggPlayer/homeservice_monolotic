@@ -34,6 +34,7 @@ const drawerWidth = 280
 const navigation = [
   { name: 'Dashboard', href: '/', icon: DashboardIcon },
   { name: 'Products', href: '/products', icon: PackageIcon },
+  { name: 'Orders', href: '/orders', icon: ShoppingCartIcon },
   { name: 'Services', href: '/services', icon: WrenchIcon },
   { name: 'Service Requests', href: '/requests', icon: FileTextIcon },
   { name: 'Quotes', href: '/quotes', icon: DollarSignIcon },
@@ -42,7 +43,7 @@ const navigation = [
   { name: 'Providers', href: '/providers', icon: ShieldIcon },
   { name: 'Analytics', href: '/analytics', icon: BarChartIcon },
   { name: 'Messages', href: '/messages', icon: MessageIcon },
-  { name: 'Orders', href: '/orders', icon: ShoppingCartIcon },
+ 
   { name: 'Settings', href: '/settings', icon: SettingsIcon },
 ]
 

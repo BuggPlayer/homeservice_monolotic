@@ -45,7 +45,7 @@ export function LoginForm({ onLogin, isLoading = false, error }: LoginFormProps)
   const [formData, setFormData] = useState({
     email: 'test@test.com',
     password: 'test123',
-    rememberMe: false,
+    rememberMe: true,
   })
   const [showPassword, setShowPassword] = useState(false)
   const [errors, setErrors] = useState<{ [key: string]: string }>({})

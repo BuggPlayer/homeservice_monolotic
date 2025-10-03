@@ -57,10 +57,11 @@ interface ProductTableProps {
   onUpdate: (product: Product) => void
   onDelete: (productId: number) => void
   onAdd: () => void
+  onView: (product: Product) => void
   categories: Array<{ id: number; name: string }>
 }
 
-export function ProductTable({ products, onUpdate, onDelete, onAdd, categories }: ProductTableProps) {
+export function ProductTable({ products, onUpdate, onDelete, onAdd, onView, categories }: ProductTableProps) {
   const [editingProduct, setEditingProduct] = useState<Product | null>(null)
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false)
   const [productToDelete, setProductToDelete] = useState<Product | null>(null)
@@ -203,7 +204,7 @@ export function ProductTable({ products, onUpdate, onDelete, onAdd, categories }
               </Box>
               <Box sx={{ display: 'flex', gap: 1 }}>
                 <Tooltip title="View Details">
-                  <IconButton size="small" color="primary">
+                  <IconButton size="small" color="primary" onClick={() => onView(product)}>
                     <ViewIcon />
                   </IconButton>
                 </Tooltip>
@@ -300,7 +301,7 @@ export function ProductTable({ products, onUpdate, onDelete, onAdd, categories }
       <TableCell>
         <Box sx={{ display: 'flex', gap: 1 }}>
           <Tooltip title="View Details">
-            <IconButton size="small" color="primary">
+            <IconButton size="small" color="primary" onClick={() => onView(product)}>
               <ViewIcon />
             </IconButton>
           </Tooltip>

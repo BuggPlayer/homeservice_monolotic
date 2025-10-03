@@ -172,6 +172,41 @@ export interface StaticData {
   analytics: Analytics
 }
 
+export interface Order {
+  id: number
+  order_id: string
+  customer: {
+    id: number
+    name: string
+    email: string
+    avatar: string
+    type: 'Pro Customer' | 'Regular Customer' | 'VIP Customer'
+  }
+  product: {
+    id: number
+    name: string
+    image: string
+    type: string
+  }
+  amount: number
+  payment_method: string
+  status: 'pending' | 'accepted' | 'completed' | 'rejected' | 'cancelled'
+  order_date: string
+  created_at: string
+  updated_at: string
+}
+
+export interface OrderStats {
+  total_orders: number
+  new_orders: number
+  completed_orders: number
+  cancelled_orders: number
+  total_revenue: number
+  average_order_value: number
+  period: string
+}
+
+export type OrderStatus = 'pending' | 'accepted' | 'completed' | 'rejected' | 'cancelled'
 export type Status = 'open' | 'quoted' | 'booked' | 'in_progress' | 'completed' | 'cancelled'
 export type Urgency = 'low' | 'medium' | 'high' | 'emergency'
 export type UserType = 'admin' | 'provider' | 'customer'
