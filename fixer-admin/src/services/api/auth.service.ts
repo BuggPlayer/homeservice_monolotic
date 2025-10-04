@@ -25,6 +25,11 @@ export interface RegisterRequest {
   password: string
   firstName: string
   lastName: string
+  phone?: string
+  businessName?: string
+  location?: string
+  userType?: 'customer' | 'provider' | 'admin'
+  agreeToMarketing?: boolean
 }
 
 export interface ChangePasswordRequest {

@@ -13,6 +13,7 @@ import { Products } from './pages/products'
 import { ServiceRequests } from './pages/service-requests'
 import { Users } from './pages/users'
 import { Auth } from './pages/auth'
+import { Signup } from './pages/signup'
 import { AddProduct } from './pages/add-product'
 import { Settings } from './pages/settings'
 import { Analytics } from './pages/analytics'
@@ -32,6 +33,7 @@ function App() {
           <Router>
             <Routes>
               <Route path="/auth" element={<Auth />} />
+              <Route path="/signup" element={<Signup />} />
               <Route path="/*" element={
                 <ProtectedRoute>
                   <MainLayout>

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
-import { Navigate, useLocation } from 'react-router-dom'
-import { Box, Container, Typography, Paper, Stack } from '@mui/material'
+import { Navigate, useLocation, Link } from 'react-router-dom'
+import { Box, Container, Typography, Paper, Stack, Button } from '@mui/material'
 import { LoginForm } from '../components/auth/LoginForm'
 import { useAppSelector, useAppDispatch } from '../store/hooks'
 import { setCredentials, setLoading } from '../store/slices/authSlice'
@@ -192,7 +192,33 @@ export function Auth() {
           </Paper>
 
           {/* Login Form */}
-          <LoginForm onLogin={handleLogin} isLoading={isLoading} error={error} />
+          <Box sx={{ order: { xs: 1, lg: 2 } }}>
+            <LoginForm onLogin={handleLogin} isLoading={isLoading} error={error} />
+            
+            {/* Signup Link */}
+            <Box sx={{ textAlign: 'center', mt: 3 }}>
+              <Typography variant="body2" color="white" sx={{ opacity: 0.9, mb: 2 }}>
+                Don't have an account yet?
+              </Typography>
+              <Button
+                component={Link}
+                to="/signup"
+                variant="outlined"
+                sx={{
+                  color: 'white',
+                  borderColor: 'rgba(255, 255, 255, 0.5)',
+                  '&:hover': {
+                    borderColor: 'white',
+                    backgroundColor: 'rgba(255, 255, 255, 0.1)',
+                  },
+                  px: 4,
+                  py: 1.5,
+                }}
+              >
+                Create Account
+              </Button>
+            </Box>
+          </Box>
         </Box>
       </Container>
     </Box>
