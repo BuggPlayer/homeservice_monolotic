@@ -13,6 +13,11 @@ const PORT = config.PORT;
 server.listen(PORT, () => {
   console.log(`🚀 Fixer API server running on port ${PORT}`);
   console.log(`📊 Environment: ${config.NODE_ENV}`);
+  console.log(`📊 Database: ${config.DATABASE.NAME}`);
+  console.log(`📊 Database: ${config.DATABASE.HOST}`);
+  console.log(`📊 Database: ${config.DATABASE.PORT}`);
+  console.log(`📊 Database: ${config.DATABASE.USER}`);
+  console.log(`📊 Database: ${config.DATABASE.PASSWORD}`);
   console.log(`🔗 Health check: http://localhost:${PORT}/health`);
   console.log(`🔌 Socket.IO enabled for real-time communication`);
 });

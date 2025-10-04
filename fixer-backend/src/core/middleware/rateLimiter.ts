@@ -68,9 +68,9 @@ export class RateLimiter {
 
   // Predefined rate limiters for different use cases
   static strict = this.create({
-    windowMs: 15 * 60 * 1000, // 15 minutes
+    windowMs: 2 * 60 * 1000, // 2 minutes
     maxRequests: 10,
-    message: 'Too many requests, please try again in 15 minutes.'
+    message: 'Too many requests, please try again in 2 minutes.'
   });
 
   static moderate = this.create({

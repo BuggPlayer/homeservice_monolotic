@@ -25,6 +25,7 @@ export class AuthService {
    * Register a new user
    */
   async register(data: RegisterRequest): Promise<RegisterResponse> {
+ 
     // Check if user already exists
     const existingUserByEmail = await this.userRepository.findByEmail(data.email);
     if (existingUserByEmail) {
