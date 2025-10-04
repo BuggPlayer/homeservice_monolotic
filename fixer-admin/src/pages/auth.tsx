@@ -3,9 +3,8 @@ import { Navigate, useLocation, Link } from 'react-router-dom'
 import { Box, Container, Typography, Paper, Stack, Button } from '@mui/material'
 import { LoginForm } from '../components/auth/LoginForm'
 import { useAppSelector, useAppDispatch } from '../store/hooks'
-import { setCredentials, setLoading } from '../store/slices/authSlice'
+import { loginUser } from '../store/slices/authSlice'
 import { addToast } from '../store/slices/uiSlice'
-import { AuthService } from '../services/api'
 
 export function Auth() {
   const dispatch = useAppDispatch()
@@ -22,38 +21,44 @@ export function Auth() {
   const handleLogin = async (credentials: { email: string; password: string; rememberMe: boolean }) => {
     try {
       setError('')
-      dispatch(setLoading(true))
       
-      // const response = await AuthService.login(credentials)
-      const response = {
-        data: {
-          user: {
-            id: 1,
-            email: 'test@test.com',
-              firstName: 'Test',
-              lastName: 'User',
-              role: 'admin'
-          },
-          token: 'test-token'
-        }
-      }
-      
-      // Store credentials in Redux
-      dispatch(setCredentials({
-        user: response.data.user,
-        token: response.data.token
+      // Use the new async thunk for login
+      const result = await dispatch(loginUser({
+        email: credentials.email,
+        password: credentials.password,
+        rememberMe: credentials.rememberMe
       }))
       
-      // Store in localStorage if remember me is checked
-      if (credentials.rememberMe) {
-        localStorage.setItem('user', JSON.stringify(response.data.user))
-        localStorage.setItem('token', response.data.token)
+      // Check if login was successful
+      if (loginUser.fulfilled.match(result)) {
+        // Store in localStorage if remember me is checked
+        if (credentials.rememberMe) {
+          localStorage.setItem('user', JSON.stringify(result.payload.user))
+          localStorage.setItem('token', result.payload.token)
+        }
+        
+        // Show success message
+        dispatch(addToast({
+          message: 'Welcome back! You have been successfully signed in.',
+          severity: 'success'
+        }))
+      } else {
+        // Handle login failure
+        const errorMessage = typeof result.payload === 'string' ? result.payload : 'Login failed'
+        setError(errorMessage)
+        dispatch(addToast({
+          message: errorMessage,
+          severity: 'error'
+        }))
       }
       
     } catch (err: any) {
-      setError(err?.message || 'Login failed')
-    } finally {
-      dispatch(setLoading(false))
+      const errorMessage = err?.message || 'Login failed'
+      setError(errorMessage)
+      dispatch(addToast({
+        message: errorMessage,
+        severity: 'error'
+      }))
     }
   }
 

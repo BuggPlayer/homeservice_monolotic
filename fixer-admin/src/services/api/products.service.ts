@@ -1,59 +1,16 @@
 import { api } from './base'
+import type {
+  Product,
+  CreateProductRequest,
+  UpdateProductRequest,
+  ProductsResponse,
+  ProductsQuery,
+  FileUploadResponse,
+} from '../../types'
 
-// Types
-export interface Product {
-  id: number
-  name: string
-  description: string
-  price: number
-  original_price: number
-  sku: string
-  category_id: number
-  stock_quantity: number
-  is_featured: boolean
-  rating: number
-  review_count: number
-  images: string[]
-  created_at: string
-  updated_at: string
-}
-
-export interface CreateProductRequest {
-  name: string
-  description: string
-  price: number
-  original_price?: number
-  sku: string
-  category_id: number
-  stock_quantity: number
-  is_featured?: boolean
-  images: string[]
-}
-
-export interface UpdateProductRequest extends Partial<CreateProductRequest> {
-  id: number
-}
-
-export interface ProductsResponse {
-  products: Product[]
-  total: number
-  page: number
-  limit: number
-  totalPages: number
-}
-
-export interface ProductsQuery {
-  page?: number
-  limit?: number
-  search?: string
-  category_id?: number
-  is_featured?: boolean
-  sort_by?: 'name' | 'price' | 'created_at' | 'rating'
-  sort_order?: 'asc' | 'desc'
-}
-
+// Legacy interface for backward compatibility
 export interface BulkDeleteRequest {
-  ids: number[]
+  ids: string[]
 }
 
 /**
@@ -84,7 +41,7 @@ export class ProductsService {
   /**
    * Get single product by ID
    */
-  static async getProduct(id: number) {
+  static async getProduct(id: string) {
     return api.get<Product>(`/products/${id}`, {
       loadingMessage: 'Loading product...',
       showSuccessToast: false,
@@ -105,7 +62,7 @@ export class ProductsService {
   /**
    * Update existing product
    */
-  static async updateProduct(id: number, product: Partial<CreateProductRequest>) {
+  static async updateProduct(id: string, product: UpdateProductRequest) {
     return api.put<Product>(`/products/${id}`, product, {
       loadingMessage: 'Updating product...',
       successMessage: 'Product updated successfully!',
@@ -116,7 +73,7 @@ export class ProductsService {
   /**
    * Delete product
    */
-  static async deleteProduct(id: number) {
+  static async deleteProduct(id: string) {
     return api.delete(`/products/${id}`, {
       loadingMessage: 'Deleting product...',
       successMessage: 'Product deleted successfully!',
@@ -127,7 +84,7 @@ export class ProductsService {
   /**
    * Bulk delete products
    */
-  static async bulkDeleteProducts(ids: number[]) {
+  static async bulkDeleteProducts(ids: string[]) {
     return api.post('/products/bulk-delete', { ids }, {
       loadingMessage: 'Deleting products...',
       successMessage: `${ids.length} products deleted successfully!`,
@@ -142,7 +99,7 @@ export class ProductsService {
     const formData = new FormData()
     formData.append('image', file)
 
-    return api.uploadFile<{ url: string }>('/products/upload-image', formData, {
+    return api.uploadFile<FileUploadResponse>('/products/upload-image', formData, {
       loadingMessage: 'Uploading image...',
       successMessage: 'Image uploaded successfully!',
       errorMessage: 'Failed to upload image.',
@@ -172,10 +129,10 @@ export class ProductsService {
   /**
    * Get products by category
    */
-  static async getProductsByCategory(categoryId: number, query: Omit<ProductsQuery, 'category_id'> = {}) {
+  static async getProductsByCategory(categoryId: string, query: Omit<ProductsQuery, 'categoryId'> = {}) {
     return this.getProducts({
       ...query,
-      category_id: categoryId,
+      categoryId,
     })
   }
 }

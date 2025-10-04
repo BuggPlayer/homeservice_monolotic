@@ -1,32 +1,11 @@
 import { api } from './base'
-
-// Types
-export interface Category {
-  id: number
-  name: string
-  description: string
-  slug: string
-  image?: string
-  parent_id?: number
-  is_active: boolean
-  sort_order: number
-  created_at: string
-  updated_at: string
-}
-
-export interface CreateCategoryRequest {
-  name: string
-  description: string
-  slug: string
-  image?: string
-  parent_id?: number
-  is_active?: boolean
-  sort_order?: number
-}
-
-export interface UpdateCategoryRequest extends Partial<CreateCategoryRequest> {
-  id: number
-}
+import type {
+  Category,
+  CreateCategoryRequest,
+  UpdateCategoryRequest,
+  CategoriesQuery,
+  FileUploadResponse,
+} from '../../types'
 
 /**
  * Categories Service
@@ -46,7 +25,7 @@ export class CategoriesService {
   /**
    * Get single category by ID
    */
-  static async getCategory(id: number) {
+  static async getCategory(id: string) {
     return api.get<Category>(`/categories/${id}`, {
       loadingMessage: 'Loading category...',
       showSuccessToast: false,
@@ -67,7 +46,7 @@ export class CategoriesService {
   /**
    * Update existing category
    */
-  static async updateCategory(id: number, category: Partial<CreateCategoryRequest>) {
+  static async updateCategory(id: string, category: UpdateCategoryRequest) {
     return api.put<Category>(`/categories/${id}`, category, {
       loadingMessage: 'Updating category...',
       successMessage: 'Category updated successfully!',
@@ -78,7 +57,7 @@ export class CategoriesService {
   /**
    * Delete category
    */
-  static async deleteCategory(id: number) {
+  static async deleteCategory(id: string) {
     return api.delete(`/categories/${id}`, {
       loadingMessage: 'Deleting category...',
       successMessage: 'Category deleted successfully!',
@@ -93,7 +72,7 @@ export class CategoriesService {
     const formData = new FormData()
     formData.append('image', file)
 
-    return api.uploadFile<{ url: string }>('/categories/upload-image', formData, {
+    return api.uploadFile<FileUploadResponse>('/categories/upload-image', formData, {
       loadingMessage: 'Uploading image...',
       successMessage: 'Image uploaded successfully!',
       errorMessage: 'Failed to upload image.',
@@ -106,6 +85,26 @@ export class CategoriesService {
   static async getActiveCategories() {
     return api.get<Category[]>('/categories/active', {
       loadingMessage: 'Loading active categories...',
+      showSuccessToast: false,
+    })
+  }
+
+  /**
+   * Get categories with filters
+   */
+  static async getCategoriesWithFilters(query: CategoriesQuery = {}) {
+    const params = new URLSearchParams()
+    
+    Object.entries(query).forEach(([key, value]) => {
+      if (value !== undefined && value !== null) {
+        params.append(key, value.toString())
+      }
+    })
+
+    const endpoint = `/categories${params.toString() ? `?${params.toString()}` : ''}`
+    
+    return api.get<Category[]>(endpoint, {
+      loadingMessage: 'Loading categories...',
       showSuccessToast: false,
     })
   }

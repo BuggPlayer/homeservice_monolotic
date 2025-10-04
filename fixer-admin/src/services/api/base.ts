@@ -1,5 +1,6 @@
 import { store } from '../../store'
 import { setLoading, addToast } from '../../store/slices/uiSlice'
+import { ErrorHandler } from './error-handler'
 
 // API Configuration
 const API_CONFIG = {
@@ -24,17 +25,18 @@ interface RequestConfig {
 
 // Response interface
 interface ApiResponse<T = any> {
-  data: T
   success: boolean
+  data: T
   message: string
-  status: number
+  timestamp?: string
 }
 
 // Error interface
 interface ApiError {
+  code: 'VALIDATION_ERROR' | 'UNAUTHORIZED' | 'FORBIDDEN' | 'NOT_FOUND' | 'CONFLICT' | 'RATE_LIMITED' | 'INTERNAL_ERROR'
   message: string
+  details?: any
   status: number
-  data?: any
 }
 
 /**
@@ -116,18 +118,20 @@ class ApiBase {
     const data = await response.json()
     
     if (!response.ok) {
+      const error = data.error || data
       throw {
-        message: data.message || `HTTP error! status: ${response.status}`,
+        code: error.code || 'INTERNAL_ERROR',
+        message: error.message || `HTTP error! status: ${response.status}`,
+        details: error.details,
         status: response.status,
-        data: data,
       } as ApiError
     }
 
     return {
-      data: data.data || data,
-      success: true,
+      success: data.success,
+      data: data.data,
       message: data.message || 'Success',
-      status: response.status,
+      timestamp: data.timestamp,
     }
   }
 
@@ -141,12 +145,13 @@ class ApiBase {
     try {
       return await requestFn()
     } catch (error) {
-      if (attempt < this.retryAttempts && (error as ApiError).status >= 500) {
+      const apiError = error as ApiError
+      if (attempt < this.retryAttempts && apiError.status >= 500) {
         // Wait before retrying (exponential backoff)
         await new Promise(resolve => setTimeout(resolve, Math.pow(2, attempt) * 1000))
         return this.retryRequest(requestFn, attempt + 1)
       }
-      throw error
+      throw apiError
     }
   }
 
@@ -198,9 +203,9 @@ class ApiBase {
     } catch (error) {
       const apiError = error as ApiError
       
-      // Show error toast if enabled
+      // Use enhanced error handling
       if (showErrorToast) {
-        this.showErrorToast(apiError.message || errorMessage)
+        ErrorHandler.handleApiError(apiError, errorMessage)
       }
 
       throw apiError
@@ -277,7 +282,7 @@ class ApiBase {
       const apiError = error as ApiError
       
       if (showErrorToast) {
-        this.showErrorToast(apiError.message || errorMessage)
+        ErrorHandler.handleFileUploadError(apiError)
       }
 
       throw apiError

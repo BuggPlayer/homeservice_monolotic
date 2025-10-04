@@ -3,9 +3,8 @@ import { Navigate, useLocation, useNavigate } from 'react-router-dom'
 import { Box, Container, Typography, Paper, Stack, Fade, Zoom, Slide } from '@mui/material'
 import { SignupForm } from '../components/auth/SignupForm'
 import { useAppSelector, useAppDispatch } from '../store/hooks'
-import { setCredentials, setLoading } from '../store/slices/authSlice'
+import { registerUser } from '../store/slices/authSlice'
 import { addToast } from '../store/slices/uiSlice'
-import { AuthService } from '../services/api'
 import {
   Star as StarIcon,
   TrendingUp as TrendingUpIcon,
@@ -44,7 +43,6 @@ export function Signup() {
   }) => {
     try {
       setError('')
-      dispatch(setLoading(true))
       
       // Prepare registration data
       const registrationData = {
@@ -59,50 +57,38 @@ export function Signup() {
         agreeToMarketing: userData.agreeToMarketing,
       }
 
-      // For demo purposes, simulate API call
-      // In production, uncomment the actual API call:
-      // const response = await AuthService.register(registrationData)
+      // Use the new async thunk for registration
+      const result = await dispatch(registerUser(registrationData))
       
-      // Simulate successful registration
-      const mockResponse = {
-        data: {
-          user: {
-            id: Date.now(),
-            email: userData.email,
-            firstName: userData.firstName,
-            lastName: userData.lastName,
-            role: userData.userType === 'admin' ? 'admin' : 'user',
-            avatar: undefined
-          },
-          token: 'mock-jwt-token-' + Date.now()
-        }
+      // Check if registration was successful
+      if (registerUser.fulfilled.match(result)) {
+        // Show success message
+        dispatch(addToast({
+          message: 'Account created successfully! Welcome to Fixer!',
+          severity: 'success'
+        }))
+        
+        // Small delay for better UX
+        setTimeout(() => {
+          navigate('/dashboard')
+        }, 1000)
+      } else {
+        // Handle registration failure
+        const errorMessage = typeof result.payload === 'string' ? result.payload : 'Registration failed. Please try again.'
+        setError(errorMessage)
+        dispatch(addToast({
+          message: errorMessage,
+          severity: 'error'
+        }))
       }
       
-      // Store credentials in Redux
-      dispatch(setCredentials({
-        user: mockResponse.data.user,
-        token: mockResponse.data.token
-      }))
-      
-      // Show success message
-      dispatch(addToast({
-        message: 'Account created successfully! Welcome to Fixer!',
-        severity: 'success'
-      }))
-      
-      // Small delay for better UX
-      setTimeout(() => {
-        navigate('/dashboard')
-      }, 1000)
-      
     } catch (err: any) {
-      setError(err?.message || 'Registration failed. Please try again.')
+      const errorMessage = err?.message || 'Registration failed. Please try again.'
+      setError(errorMessage)
       dispatch(addToast({
-        message: err?.message || 'Registration failed. Please try again.',
+        message: errorMessage,
         severity: 'error'
       }))
-    } finally {
-      dispatch(setLoading(false))
     }
   }
 
