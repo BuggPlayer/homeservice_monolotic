@@ -6,12 +6,13 @@ dotenv.config();
 const dbConfig: PoolConfig = {
   host: process.env.DB_HOST || 'localhost',
   port: parseInt(process.env.DB_PORT || '5432'),
-  database: process.env.DB_NAME || 'fixer_marketplace',
+  database: process.env.DB_DATABASE || 'fixer_marketplace', // Fixed: was DB_NAME
   user: process.env.DB_USER || 'postgres',
   password: process.env.DB_PASSWORD || '',
   max: 20, // Maximum number of clients in the pool
   idleTimeoutMillis: 30000, // Close idle clients after 30 seconds
-  connectionTimeoutMillis: 2000, // Return an error after 2 seconds if connection could not be established
+  connectionTimeoutMillis: 10000, // Increased timeout for Supabase
+  ssl: process.env.DB_HOST?.includes('supabase.co') ? { rejectUnauthorized: false } : false, // SSL for Supabase
 };
 
 export const pool = new Pool(dbConfig);

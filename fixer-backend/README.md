@@ -130,3 +130,9 @@ Fixer Marketplace is a comprehensive home services platform that connects custom
 - **Real-time**: socket.io
 - **Logging**: morgan, winston
 - **Testing**: jest, supertest
+
+
+Test Credentials:
+Admin: admin@fixer.com / admin123
+Customer: john.doe@example.com / password123
+Provider: electrician@fixer.com / password123
