@@ -43,8 +43,8 @@ interface LoginFormProps {
 
 export function LoginForm({ onLogin, isLoading = false, error }: LoginFormProps) {
   const [formData, setFormData] = useState({
-    email: 'test@test.com',
-    password: 'test123',
+    email: 'test@gmail.com',
+    password: 'SecurePassword123!',
     rememberMe: true,
   })
   const [showPassword, setShowPassword] = useState(false)

@@ -15,6 +15,7 @@ import { Users } from './pages/users'
 import { Auth } from './pages/auth'
 import { Signup } from './pages/signup'
 import { AddProduct } from './pages/add-product'
+import Categories from './pages/categories'
 import { Settings } from './pages/settings'
 import { Analytics } from './pages/analytics'
 import { Bookings } from './pages/bookings'
@@ -41,6 +42,7 @@ function App() {
                       <Route path="/" element={<Dashboard />} />
                       <Route path="/products" element={<Products />} />
                       <Route path="/products/add" element={<AddProduct />} />
+                      <Route path="/categories" element={<Categories />} />
                       <Route path="/services" element={<Services />} />
                       <Route path="/requests" element={<ServiceRequests />} />
                       <Route path="/quotes" element={<Quotes />} />

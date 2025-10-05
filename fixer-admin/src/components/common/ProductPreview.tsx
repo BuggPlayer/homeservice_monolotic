@@ -1,561 +1,360 @@
-import React, { useState } from 'react'
+import React from 'react'
 import {
   Box,
-  Grid,
   Typography,
+  Grid,
   Card,
   CardContent,
   Avatar,
   Chip,
-  List,
-  ListItem,
-  ListItemText,
-  ListItemIcon,
   Divider,
+  Rating,
   Button,
   IconButton,
-  Rating,
-  Badge,
   useTheme,
-  useMediaQuery,
-  ImageList,
-  ImageListItem,
-  Tabs,
-  Tab,
+  useMediaQuery
 } from '@mui/material'
 import {
-  Inventory as InventoryIcon,
-  Category as CategoryIcon,
-  AttachMoney as MoneyIcon,
-  Star as StarIcon,
-  Visibility as VisibilityIcon,
-  ShoppingCart as ShoppingCartIcon,
-  LocalShipping as ShippingIcon,
-  Security as SecurityIcon,
-  CheckCircle as CheckCircleIcon,
-  Warning as WarningIcon,
-  Info as InfoIcon,
-  ZoomIn as ZoomInIcon,
+  Edit as EditIcon,
+  Delete as DeleteIcon,
+  Print as PrintIcon,
   Share as ShareIcon,
-  Favorite as FavoriteIcon,
-  FavoriteBorder as FavoriteBorderIcon,
+  Visibility as VisibilityIcon,
+  ShoppingCart as ShoppingCartIcon
 } from '@mui/icons-material'
-import { formatCurrency, formatDate, safeFormatDate } from '../../lib/utils'
-
-export interface ProductImage {
-  id: string | number
-  url: string
-  alt: string
-  isPrimary?: boolean
-}
-
-export interface ProductSpecification {
-  name: string
-  value: string
-  icon?: React.ReactNode
-}
-
-export interface ProductReview {
-  id: string | number
-  customerName: string
-  customerAvatar?: string
-  rating: number
-  comment: string
-  date: string
-  verified: boolean
-}
-
-export interface ProductPreviewData {
-  id: string | number
-  name: string
-  description: string
-  shortDescription?: string
-  category: string
-  subcategory?: string
-  brand?: string
-  sku: string
-  price: number
-  comparePrice?: number
-  cost?: number
-  status: 'active' | 'inactive' | 'draft' | 'archived'
-  inventory: {
-    quantity: number
-    lowStockThreshold: number
-    trackQuantity: boolean
-    allowBackorder: boolean
-  }
-  images: ProductImage[]
-  specifications: ProductSpecification[]
-  features: string[]
-  tags: string[]
-  seo: {
-    title?: string
-    description?: string
-    keywords?: string[]
-  }
-  shipping: {
-    weight: number
-    dimensions: {
-      length: number
-      width: number
-      height: number
-    }
-    freeShipping: boolean
-    shippingClass?: string
-  }
-  reviews: {
-    averageRating: number
-    totalReviews: number
-    reviews: ProductReview[]
-  }
-  analytics: {
-    views: number
-    sales: number
-    conversionRate: number
-  }
-  createdAt: string
-  updatedAt: string
-}
 
 interface ProductPreviewProps {
-  product: ProductPreviewData
-  onEdit?: () => void
-  onDelete?: () => void
-  onDuplicate?: () => void
-  onViewAnalytics?: () => void
+  product: {
+    id: string
+    name: string
+    description: string
+    price: number
+    originalPrice?: number
+    sku: string
+    status: string
+    isFeatured: boolean
+    images: string[]
+    specifications?: Record<string, any>
+    category?: {
+      id: string
+      name: string
+    }
+    provider?: {
+      businessName: string
+    }
+    rating?: number
+    reviewCount?: number
+    stockQuantity: number
+    createdAt: string
+    updatedAt?: string
+  }
+  onEdit: () => void
+  onDelete: () => void
+  onPrint: () => void
+  onShare: () => void
+  onView?: () => void
 }
 
-interface TabPanelProps {
-  children?: React.ReactNode
-  index: number
-  value: number
+const getStatusColor = (status: string) => {
+  switch (status.toLowerCase()) {
+    case 'active':
+      return 'success'
+    case 'inactive':
+      return 'error'
+    case 'discontinued':
+      return 'default'
+    default:
+      return 'default'
+  }
 }
 
-function TabPanel(props: TabPanelProps) {
-  const { children, value, index, ...other } = props
-
-  return (
-    <div
-      role="tabpanel"
-      hidden={value !== index}
-      id={`product-tabpanel-${index}`}
-      aria-labelledby={`product-tab-${index}`}
-      {...other}
-    >
-      {value === index && <Box sx={{ pt: 3 }}>{children}</Box>}
-    </div>
-  )
-}
-
-export function ProductPreview({ 
-  product, 
-  onEdit, 
-  onDelete, 
-  onDuplicate, 
-  onViewAnalytics 
-}: ProductPreviewProps) {
+export const ProductPreview: React.FC<ProductPreviewProps> = ({
+  product,
+  onEdit,
+  onDelete,
+  onPrint,
+  onShare,
+  onView
+}) => {
   const theme = useTheme()
   const isMobile = useMediaQuery(theme.breakpoints.down('md'))
-  const isTablet = useMediaQuery(theme.breakpoints.down('lg'))
-  
-  const [selectedImage, setSelectedImage] = useState(product.images[0]?.url || '')
-  const [tabValue, setTabValue] = useState(0)
-  const [isFavorite, setIsFavorite] = useState(false)
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'active':
-        return 'success'
-      case 'inactive':
-        return 'warning'
-      case 'draft':
-        return 'info'
-      case 'archived':
-        return 'error'
-      default:
-        return 'default'
-    }
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      minimumFractionDigits: 2
+    }).format(amount)
   }
 
-  const getStatusLabel = (status: string) => {
-    switch (status) {
-      case 'active':
-        return 'Active'
-      case 'inactive':
-        return 'Inactive'
-      case 'draft':
-        return 'Draft'
-      case 'archived':
-        return 'Archived'
-      default:
-        return status
-    }
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    })
   }
 
-  const getInventoryStatus = () => {
-    if (product.inventory.quantity === 0) {
-      return { color: 'error', label: 'Out of Stock', icon: <WarningIcon /> }
-    } else if (product.inventory.quantity <= product.inventory.lowStockThreshold) {
-      return { color: 'warning', label: 'Low Stock', icon: <WarningIcon /> }
-    } else {
-      return { color: 'success', label: 'In Stock', icon: <CheckCircleIcon /> }
-    }
-  }
-
-  const inventoryStatus = getInventoryStatus()
-
-  const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
-    setTabValue(newValue)
-  }
+  const discountPercentage = product.originalPrice 
+    ? Math.round(((product.originalPrice - product.price) / product.originalPrice) * 100)
+    : 0
 
   return (
-    <Box sx={{ maxWidth: '100%', mx: 'auto' }}>
-      {/* Product Header */}
-      <Box sx={{ mb: 3 }}>
-        <Box sx={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', mb: 2 }}>
-          <Box sx={{ flex: 1 }}>
-            <Typography variant="h4" sx={{ fontWeight: 700, color: 'text.primary', mb: 1 }}>
-              {product.name}
-            </Typography>
-            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 1 }}>
-              <Chip
-                label={getStatusLabel(product.status)}
-                color={getStatusColor(product.status) as any}
-                size="small"
-              />
-              <Chip
-                label={inventoryStatus.label}
-                color={inventoryStatus.color as any}
-                size="small"
-                icon={inventoryStatus.icon}
-              />
-              <Chip
-                label={product.category}
-                variant="outlined"
-                size="small"
-                icon={<CategoryIcon />}
-              />
-            </Box>
-            <Typography variant="body2" color="text.secondary">
-              SKU: {product.sku} • Created {safeFormatDate(product.createdAt)}
-            </Typography>
-          </Box>
-          <Box sx={{ display: 'flex', gap: 1 }}>
-            <IconButton
-              onClick={() => setIsFavorite(!isFavorite)}
-              color={isFavorite ? 'error' : 'default'}
-            >
-              {isFavorite ? <FavoriteIcon /> : <FavoriteBorderIcon />}
+    <Box sx={{ maxWidth: '100%' }}>
+      {/* Header Actions */}
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+          <Typography variant="h5" sx={{ fontWeight: 600 }}>
+            {product.name}
+          </Typography>
+          <Chip
+            label={product.status}
+            color={getStatusColor(product.status) as any}
+            variant="filled"
+            sx={{ textTransform: 'capitalize', fontWeight: 600 }}
+          />
+          {product.isFeatured && (
+            <Chip
+              label="Featured"
+              color="warning"
+              variant="filled"
+              sx={{ fontWeight: 600 }}
+            />
+          )}
+        </Box>
+        
+        <Box sx={{ display: 'flex', gap: 1 }}>
+          {onView && (
+            <IconButton onClick={onView} color="primary" size="small">
+              <VisibilityIcon />
             </IconButton>
-            <IconButton>
-              <ShareIcon />
-            </IconButton>
-          </Box>
+          )}
+          <IconButton onClick={onEdit} color="primary" size="small">
+            <EditIcon />
+          </IconButton>
+          <IconButton onClick={onPrint} color="primary" size="small">
+            <PrintIcon />
+          </IconButton>
+          <IconButton onClick={onShare} color="primary" size="small">
+            <ShareIcon />
+          </IconButton>
+          <IconButton onClick={onDelete} color="error" size="small">
+            <DeleteIcon />
+          </IconButton>
         </Box>
       </Box>
 
       <Grid container spacing={3}>
-        {/* Left Column - Images and Basic Info */}
-        <Grid item xs={12} lg={6}>
-          {/* Product Images */}
-          <Card sx={{ mb: 3 }}>
-            <CardContent>
-              <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                <InventoryIcon sx={{ mr: 1, color: 'primary.main' }} />
-                <Typography variant="h6" sx={{ fontWeight: 600 }}>
-                  Product Images
-                </Typography>
-              </Box>
-              
-              {/* Main Image */}
-              <Box sx={{ mb: 2, textAlign: 'center' }}>
-                <Box
-                  component="img"
-                  src={selectedImage}
-                  alt={product.name}
-                  sx={{
-                    maxWidth: '100%',
-                    maxHeight: 400,
-                    borderRadius: 2,
-                    boxShadow: theme.shadows[4],
-                    cursor: 'pointer',
-                    '&:hover': {
-                      transform: 'scale(1.02)',
-                      transition: 'transform 0.2s ease-in-out',
-                    },
-                  }}
-                />
-              </Box>
-
-              {/* Thumbnail Images */}
-              {product.images.length > 1 && (
-                <ImageList
-                  sx={{ width: '100%', height: 100 }}
-                  cols={product.images.length}
-                  rowHeight={100}
-                >
-                  {product.images.map((image) => (
-                    <ImageListItem key={image.id}>
-                      <Box
-                        component="img"
-                        src={image.url}
-                        alt={image.alt}
-                        sx={{
-                          width: '100%',
-                          height: '100%',
-                          objectFit: 'cover',
-                          borderRadius: 1,
-                          cursor: 'pointer',
-                          border: selectedImage === image.url ? 2 : 1,
-                          borderColor: selectedImage === image.url ? 'primary.main' : 'divider',
-                          '&:hover': {
-                            borderColor: 'primary.main',
-                          },
-                        }}
-                        onClick={() => setSelectedImage(image.url)}
-                      />
-                    </ImageListItem>
-                  ))}
-                </ImageList>
-              )}
-            </CardContent>
-          </Card>
-
-          {/* Product Details */}
+        {/* Product Images */}
+        <Grid item xs={12} md={6}>
           <Card>
             <CardContent>
-              <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                <InfoIcon sx={{ mr: 1, color: 'primary.main' }} />
-                <Typography variant="h6" sx={{ fontWeight: 600 }}>
-                  Product Details
-                </Typography>
-              </Box>
-              
-              <List dense>
-                <ListItem sx={{ px: 0 }}>
-                  <ListItemIcon>
-                    <MoneyIcon sx={{ color: 'text.secondary' }} />
-                  </ListItemIcon>
-                  <ListItemText
-                    primary="Price"
-                    secondary={
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                        <Typography variant="h6" sx={{ fontWeight: 600, color: 'primary.main' }}>
-                          {formatCurrency(product.price)}
-                        </Typography>
-                        {product.comparePrice && (
-                          <Typography
-                            variant="body2"
-                            sx={{ textDecoration: 'line-through', color: 'text.secondary' }}
-                          >
-                            {formatCurrency(product.comparePrice)}
-                          </Typography>
-                        )}
-                      </Box>
-                    }
-                  />
-                </ListItem>
-                
-                <ListItem sx={{ px: 0 }}>
-                  <ListItemIcon>
-                    <InventoryIcon sx={{ color: 'text.secondary' }} />
-                  </ListItemIcon>
-                  <ListItemText
-                    primary="Inventory"
-                    secondary={`${product.inventory.quantity} units available`}
-                  />
-                </ListItem>
-
-                <ListItem sx={{ px: 0 }}>
-                  <ListItemIcon>
-                    <StarIcon sx={{ color: 'text.secondary' }} />
-                  </ListItemIcon>
-                  <ListItemText
-                    primary="Rating"
-                    secondary={
-                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                        <Rating value={product.reviews.averageRating} readOnly size="small" />
-                        <Typography variant="body2" color="text.secondary">
-                          ({product.reviews.totalReviews} reviews)
-                        </Typography>
-                      </Box>
-                    }
-                  />
-                </ListItem>
-
-                <ListItem sx={{ px: 0 }}>
-                  <ListItemIcon>
-                    <VisibilityIcon sx={{ color: 'text.secondary' }} />
-                  </ListItemIcon>
-                  <ListItemText
-                    primary="Views"
-                    secondary={`${product.analytics.views.toLocaleString()} views`}
-                  />
-                </ListItem>
-
-                <ListItem sx={{ px: 0 }}>
-                  <ListItemIcon>
-                    <ShoppingCartIcon sx={{ color: 'text.secondary' }} />
-                  </ListItemIcon>
-                  <ListItemText
-                    primary="Sales"
-                    secondary={`${product.analytics.sales} sold`}
-                  />
-                </ListItem>
-              </List>
+              <Typography variant="h6" sx={{ mb: 2, fontWeight: 600 }}>
+                Product Images
+              </Typography>
+              <Grid container spacing={2}>
+                {product.images.map((image, index) => (
+                  <Grid item xs={6} sm={4} key={index}>
+                    <Avatar
+                      src={image}
+                      alt={`${product.name} ${index + 1}`}
+                      variant="rounded"
+                      sx={{ 
+                        width: '100%', 
+                        height: 120,
+                        cursor: 'pointer',
+                        '&:hover': {
+                          transform: 'scale(1.05)',
+                          transition: 'transform 0.2s'
+                        }
+                      }}
+                    />
+                  </Grid>
+                ))}
+              </Grid>
             </CardContent>
           </Card>
         </Grid>
 
-        {/* Right Column - Tabs with Details */}
-        <Grid item xs={12} lg={6}>
+        {/* Product Details */}
+        <Grid item xs={12} md={6}>
           <Card>
             <CardContent>
-              <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-                <Tabs value={tabValue} onChange={handleTabChange} aria-label="product details tabs">
-                  <Tab label="Description" />
-                  <Tab label="Specifications" />
-                  <Tab label="Reviews" />
-                  <Tab label="Analytics" />
-                </Tabs>
-              </Box>
-
-              <TabPanel value={tabValue} index={0}>
-                <Typography variant="body1" sx={{ mb: 2 }}>
-                  {product.description}
-                </Typography>
-                
-                {product.features.length > 0 && (
-                  <Box>
-                    <Typography variant="h6" sx={{ mb: 1, fontWeight: 600 }}>
-                      Key Features
+              <Typography variant="h6" sx={{ mb: 2, fontWeight: 600 }}>
+                Product Details
+              </Typography>
+              
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                {/* Price Information */}
+                <Box>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 1 }}>
+                    <Typography variant="h4" sx={{ fontWeight: 700, color: 'primary.main' }}>
+                      {formatCurrency(product.price)}
                     </Typography>
-                    <List dense>
-                      {product.features.map((feature, index) => (
-                        <ListItem key={index} sx={{ px: 0 }}>
-                          <ListItemIcon>
-                            <CheckCircleIcon sx={{ color: 'success.main', fontSize: 20 }} />
-                          </ListItemIcon>
-                          <ListItemText primary={feature} />
-                        </ListItem>
-                      ))}
-                    </List>
-                  </Box>
-                )}
-
-                {product.tags.length > 0 && (
-                  <Box sx={{ mt: 2 }}>
-                    <Typography variant="h6" sx={{ mb: 1, fontWeight: 600 }}>
-                      Tags
-                    </Typography>
-                    <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
-                      {product.tags.map((tag, index) => (
-                        <Chip key={index} label={tag} size="small" variant="outlined" />
-                      ))}
-                    </Box>
-                  </Box>
-                )}
-              </TabPanel>
-
-              <TabPanel value={tabValue} index={1}>
-                <List>
-                  {product.specifications.map((spec, index) => (
-                    <ListItem key={index} sx={{ px: 0 }}>
-                      <ListItemIcon>
-                        {spec.icon || <InfoIcon sx={{ color: 'text.secondary' }} />}
-                      </ListItemIcon>
-                      <ListItemText
-                        primary={spec.name}
-                        secondary={spec.value}
-                      />
-                    </ListItem>
-                  ))}
-                </List>
-              </TabPanel>
-
-              <TabPanel value={tabValue} index={2}>
-                <Box sx={{ mb: 2 }}>
-                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
-                    <Rating value={product.reviews.averageRating} readOnly />
-                    <Typography variant="h6" sx={{ fontWeight: 600 }}>
-                      {product.reviews.averageRating.toFixed(1)}
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary">
-                      ({product.reviews.totalReviews} reviews)
-                    </Typography>
+                    {product.originalPrice && product.originalPrice > product.price && (
+                      <>
+                        <Typography 
+                          variant="h6" 
+                          sx={{ 
+                            textDecoration: 'line-through', 
+                            color: 'text.secondary' 
+                          }}
+                        >
+                          {formatCurrency(product.originalPrice)}
+                        </Typography>
+                        <Chip
+                          label={`-${discountPercentage}%`}
+                          color="error"
+                          size="small"
+                          sx={{ fontWeight: 600 }}
+                        />
+                      </>
+                    )}
                   </Box>
                 </Box>
 
-                <List>
-                  {product.reviews.reviews.slice(0, 3).map((review) => (
-                    <ListItem key={review.id} sx={{ px: 0, alignItems: 'flex-start' }}>
-                      <ListItemIcon>
-                        <Avatar src={review.customerAvatar} sx={{ width: 32, height: 32 }}>
-                          {review.customerName.charAt(0)}
-                        </Avatar>
-                      </ListItemIcon>
-                      <ListItemText
-                        primary={
-                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                            <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
-                              {review.customerName}
-                            </Typography>
-                            {review.verified && (
-                              <Chip label="Verified" size="small" color="success" />
-                            )}
-                          </Box>
-                        }
-                        secondary={
-                          <Box>
-                            <Rating value={review.rating} readOnly size="small" sx={{ mb: 0.5 }} />
-                            <Typography variant="body2" color="text.secondary">
-                              {review.comment}
-                            </Typography>
-                            <Typography variant="caption" color="text.secondary">
-                              {safeFormatDate(review.date)}
-                            </Typography>
-                          </Box>
-                        }
-                      />
-                    </ListItem>
-                  ))}
-                </List>
-              </TabPanel>
+                {/* Rating */}
+                {product.rating && (
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <Rating value={product.rating} precision={0.1} readOnly size="small" />
+                    <Typography variant="body2" color="text.secondary">
+                      ({product.rating}/5)
+                    </Typography>
+                    {product.reviewCount && (
+                      <Typography variant="body2" color="text.secondary">
+                        • {product.reviewCount} reviews
+                      </Typography>
+                    )}
+                  </Box>
+                )}
 
-              <TabPanel value={tabValue} index={3}>
-                <Grid container spacing={2}>
-                  <Grid item xs={6}>
-                    <Box sx={{ textAlign: 'center', p: 2, backgroundColor: 'grey.50', borderRadius: 1 }}>
-                      <Typography variant="h4" sx={{ fontWeight: 700, color: 'primary.main' }}>
-                        {product.analytics.views.toLocaleString()}
+                {/* Stock Status */}
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <Typography variant="body2" color="text.secondary">
+                    Stock:
+                  </Typography>
+                  <Chip
+                    label={product.stockQuantity > 0 ? `${product.stockQuantity} in stock` : 'Out of stock'}
+                    color={product.stockQuantity > 0 ? 'success' : 'error'}
+                    size="small"
+                    variant="outlined"
+                  />
+                </Box>
+
+                {/* SKU */}
+                <Box>
+                  <Typography variant="body2" color="text.secondary">
+                    SKU: {product.sku}
+                  </Typography>
+                </Box>
+
+                {/* Category */}
+                {product.category && (
+                  <Box>
+                    <Typography variant="body2" color="text.secondary">
+                      Category: {product.category.name}
+                    </Typography>
+                  </Box>
+                )}
+
+                {/* Provider */}
+                {product.provider && (
+                  <Box>
+                    <Typography variant="body2" color="text.secondary">
+                      Provider: {product.provider.businessName}
+                    </Typography>
+                  </Box>
+                )}
+              </Box>
+
+              {/* Action Buttons */}
+              <Box sx={{ display: 'flex', gap: 2, mt: 3 }}>
+                <Button
+                  variant="contained"
+                  startIcon={<ShoppingCartIcon />}
+                  disabled={product.stockQuantity === 0}
+                  fullWidth={isMobile}
+                >
+                  Add to Cart
+                </Button>
+                {!isMobile && (
+                  <Button
+                    variant="outlined"
+                    startIcon={<VisibilityIcon />}
+                    onClick={onView}
+                  >
+                    View Details
+                  </Button>
+                )}
+              </Box>
+            </CardContent>
+          </Card>
+        </Grid>
+
+        {/* Description */}
+        <Grid item xs={12}>
+          <Card>
+            <CardContent>
+              <Typography variant="h6" sx={{ mb: 2, fontWeight: 600 }}>
+                Description
+              </Typography>
+              <Typography variant="body1" sx={{ lineHeight: 1.6 }}>
+                {product.description}
+              </Typography>
+            </CardContent>
+          </Card>
+        </Grid>
+
+        {/* Specifications */}
+        {product.specifications && Object.keys(product.specifications).length > 0 && (
+          <Grid item xs={12} md={6}>
+            <Card>
+              <CardContent>
+                <Typography variant="h6" sx={{ mb: 2, fontWeight: 600 }}>
+                  Specifications
+                </Typography>
+                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                  {Object.entries(product.specifications).map(([key, value]) => (
+                    <Box key={key} sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                      <Typography variant="body2" sx={{ fontWeight: 500, textTransform: 'capitalize' }}>
+                        {key.replace(/([A-Z])/g, ' $1').trim()}:
                       </Typography>
                       <Typography variant="body2" color="text.secondary">
-                        Total Views
+                        {typeof value === 'object' ? JSON.stringify(value) : String(value)}
                       </Typography>
                     </Box>
-                  </Grid>
-                  <Grid item xs={6}>
-                    <Box sx={{ textAlign: 'center', p: 2, backgroundColor: 'grey.50', borderRadius: 1 }}>
-                      <Typography variant="h4" sx={{ fontWeight: 700, color: 'success.main' }}>
-                        {product.analytics.sales}
-                      </Typography>
-                      <Typography variant="body2" color="text.secondary">
-                        Total Sales
-                      </Typography>
-                    </Box>
-                  </Grid>
-                  <Grid item xs={12}>
-                    <Box sx={{ textAlign: 'center', p: 2, backgroundColor: 'grey.50', borderRadius: 1 }}>
-                      <Typography variant="h4" sx={{ fontWeight: 700, color: 'info.main' }}>
-                        {product.analytics.conversionRate.toFixed(1)}%
-                      </Typography>
-                      <Typography variant="body2" color="text.secondary">
-                        Conversion Rate
-                      </Typography>
-                    </Box>
-                  </Grid>
-                </Grid>
-              </TabPanel>
+                  ))}
+                </Box>
+              </CardContent>
+            </Card>
+          </Grid>
+        )}
+
+        {/* Product Dates */}
+        <Grid item xs={12} md={6}>
+          <Card>
+            <CardContent>
+              <Typography variant="h6" sx={{ mb: 2, fontWeight: 600 }}>
+                Product Information
+              </Typography>
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                <Typography variant="body2">
+                  <strong>Created:</strong> {formatDate(product.createdAt)}
+                </Typography>
+                {product.updatedAt && (
+                  <Typography variant="body2">
+                    <strong>Last Updated:</strong> {formatDate(product.updatedAt)}
+                  </Typography>
+                )}
+                <Typography variant="body2">
+                  <strong>Status:</strong> {product.status}
+                </Typography>
+                {product.isFeatured && (
+                  <Typography variant="body2">
+                    <strong>Featured:</strong> Yes
+                  </Typography>
+                )}
+              </Box>
             </CardContent>
           </Card>
         </Grid>
@@ -563,5 +362,3 @@ export function ProductPreview({
     </Box>
   )
 }
-
-export default ProductPreview

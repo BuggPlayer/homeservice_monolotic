@@ -12,24 +12,21 @@ import {
   CardMediaProps,
   Paper,
   PaperProps,
-  Divider,
-  DividerProps,
 } from '@mui/material'
 import { styled } from '@mui/material/styles'
+import { spacing, borderRadius, shadows, commonProps } from '../tokens'
 
 // Styled Card with consistent design
 const StyledCard = styled(MuiCard)(({ theme }) => ({
-  borderRadius: 12,
-  boxShadow: '0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)',
-  transition: 'all 0.2s ease-in-out',
+  ...commonProps.card,
   '&:hover': {
-    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+    boxShadow: shadows.lg,
     transform: 'translateY(-2px)',
   },
   '&.clickable': {
     cursor: 'pointer',
     '&:hover': {
-      boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+      boxShadow: shadows.lg,
       transform: 'translateY(-2px)',
     },
   },
@@ -37,7 +34,7 @@ const StyledCard = styled(MuiCard)(({ theme }) => ({
 
 // Styled Paper
 const StyledPaper = styled(Paper)(({ theme }) => ({
-  borderRadius: 8,
+  borderRadius: borderRadius.md,
   backgroundImage: 'none',
 }))
 
@@ -58,7 +55,7 @@ export const Card: React.FC<CardProps> = ({
   children,
   ...props
 }) => {
-  const paddingValue = padding === 'sm' ? 16 : padding === 'lg' ? 32 : 24
+  const paddingValue = padding === 'sm' ? spacing.sm : padding === 'lg' ? spacing.lg : spacing.md
 
   return (
     <StyledCard
@@ -142,7 +139,7 @@ export const StatsCard: React.FC<StatsCardProps> = ({
           display: 'flex', 
           alignItems: 'center', 
           justifyContent: 'space-between', 
-          marginBottom: 16 
+          marginBottom: spacing.md 
         }}>
           <div>
             <h6 style={{ 
@@ -169,7 +166,7 @@ export const StatsCard: React.FC<StatsCardProps> = ({
                 margin: 0, 
                 fontSize: '0.75rem', 
                 color: 'text.secondary',
-                marginTop: 4
+                marginTop: spacing.xs
               }}>
                 {subtitle}
               </p>
@@ -183,7 +180,7 @@ export const StatsCard: React.FC<StatsCardProps> = ({
               justifyContent: 'center',
               width: 48,
               height: 48,
-              borderRadius: 8,
+              borderRadius: borderRadius.md,
               backgroundColor: `${color}.main`,
               color: `${color}.contrastText`,
               opacity: 0.1
@@ -196,8 +193,8 @@ export const StatsCard: React.FC<StatsCardProps> = ({
           <div style={{ 
             display: 'flex', 
             alignItems: 'center', 
-            gap: 4,
-            marginTop: 8
+            gap: spacing.xs,
+            marginTop: spacing.sm
           }}>
             <span style={{ 
               color: trend.isPositive ? 'success.main' : 'error.main',
@@ -243,18 +240,18 @@ export const InfoCard: React.FC<InfoCardProps> = ({
         <div style={{ 
           display: 'flex', 
           alignItems: 'flex-start', 
-          gap: 16 
+          gap: spacing.md 
         }}>
           {icon && (
             <div style={{ 
               color: `${color}.main`, 
-              marginTop: 4,
+              marginTop: spacing.xs,
               display: 'flex',
               alignItems: 'center',
               justifyContent: 'center',
               width: 40,
               height: 40,
-              borderRadius: 8,
+              borderRadius: borderRadius.md,
               backgroundColor: `${color}.main`,
               color: `${color}.contrastText`,
               opacity: 0.1
@@ -343,7 +340,7 @@ export interface CustomPaperProps extends Omit<PaperProps, 'variant'> {
 
 export const CustomPaper: React.FC<CustomPaperProps> = ({
   variant = 'elevation',
-  padding = 24,
+  padding = spacing.md,
   sx,
   ...props
 }) => {
@@ -359,38 +356,6 @@ export const CustomPaper: React.FC<CustomPaperProps> = ({
   )
 }
 
-// Card with Media Component
-export interface CardWithMediaProps extends CardProps {
-  image?: string
-  alt?: string
-  height?: number | string
-  mediaProps?: CardMediaProps
-}
-
-export const CardWithMedia: React.FC<CardWithMediaProps> = ({
-  image,
-  alt = '',
-  height = 200,
-  mediaProps,
-  children,
-  ...cardProps
-}) => {
-  return (
-    <Card {...cardProps}>
-      {image && (
-        <CardMedia
-          component="img"
-          height={height}
-          image={image}
-          alt={alt}
-          {...mediaProps}
-        />
-      )}
-      {children}
-    </Card>
-  )
-}
-
 // Export all card-related components
 export {
   CardContent,
@@ -398,6 +363,5 @@ export {
   CardActions,
   CardMedia,
   Paper as BasePaper,
-  Divider,
   MuiCard as BaseCard,
 }

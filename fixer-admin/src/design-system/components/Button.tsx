@@ -4,20 +4,17 @@ import {
   ButtonProps as MuiButtonProps,
   IconButton as MuiIconButton,
   IconButtonProps as MuiIconButtonProps,
-  Fab,
-  FabProps as MuiFabProps,
+  LoadingButton,
 } from '@mui/material'
-import { LoadingButton } from '@mui/lab'
 import { styled } from '@mui/material/styles'
+import { spacing, borderRadius, shadows, typography, sizes, commonProps } from '../tokens'
 
 // Styled Button with consistent design
-const StyledButton = styled(MuiButton)(({ theme }) => ({
-  textTransform: 'none',
-  fontWeight: 600,
-  borderRadius: 8,
+const StyledButton = styled(MuiButton)(({ theme, color = 'primary' }) => ({
+  ...commonProps.button,
   boxShadow: 'none',
   '&:hover': {
-    boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)',
+    boxShadow: shadows.lg,
     transform: 'translateY(-1px)',
   },
   '&:active': {
@@ -27,11 +24,21 @@ const StyledButton = styled(MuiButton)(({ theme }) => ({
     opacity: 0.6,
     transform: 'none',
   },
+  // Size-specific styles
+  '&.MuiButton-sizeSmall': {
+    ...sizes.button.sm,
+  },
+  '&.MuiButton-sizeMedium': {
+    ...sizes.button.md,
+  },
+  '&.MuiButton-sizeLarge': {
+    ...sizes.button.lg,
+  },
 }))
 
 // Styled IconButton
 const StyledIconButton = styled(MuiIconButton)(({ theme }) => ({
-  borderRadius: 8,
+  borderRadius: borderRadius.md,
   '&:hover': {
     backgroundColor: theme.palette.action.hover,
     transform: 'scale(1.05)',
@@ -43,12 +50,13 @@ const StyledIconButton = styled(MuiIconButton)(({ theme }) => ({
 
 // Main Button Component
 export interface ButtonProps extends Omit<MuiButtonProps, 'color' | 'variant'> {
-  variant?: 'text' | 'outlined' | 'contained'
+  variant?: 'text' | 'outlined' | 'contained' | 'gradient'
   color?: 'primary' | 'secondary' | 'success' | 'error' | 'warning' | 'info'
   size?: 'small' | 'medium' | 'large'
   loading?: boolean
   leftIcon?: React.ReactNode
   rightIcon?: React.ReactNode
+  fullWidth?: boolean
 }
 
 export const Button: React.FC<ButtonProps> = ({
@@ -146,45 +154,46 @@ export const IconButton: React.FC<IconButtonProps> = ({
   )
 }
 
-// Floating Action Button
-export interface FloatingActionButtonProps extends Omit<MuiFabProps, 'color'> {
-  color?: 'primary' | 'secondary' | 'success' | 'error' | 'warning' | 'info'
-  size?: 'small' | 'medium' | 'large'
-  variant?: 'circular' | 'extended'
+// Action Button Group
+export interface ActionButtonProps extends ButtonProps {
+  actions?: Array<{
+    label: string
+    onClick: () => void
+    icon?: React.ReactNode
+    variant?: 'text' | 'outlined' | 'contained'
+    color?: 'primary' | 'secondary' | 'success' | 'error' | 'warning' | 'info'
+  }>
 }
 
-export const FloatingActionButton: React.FC<FloatingActionButtonProps> = ({
-  color = 'primary',
-  size = 'medium',
-  variant = 'circular',
-  sx,
-  ...props
+export const ActionButton: React.FC<ActionButtonProps> = ({
+  actions = [],
+  ...buttonProps
 }) => {
+  if (actions.length === 0) {
+    return <Button {...buttonProps} />
+  }
+
   return (
-    <Fab
-      color={color}
-      size={size}
-      variant={variant}
-      sx={{
-        boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
-        '&:hover': {
-          boxShadow: '0 6px 16px rgba(0, 0, 0, 0.2)',
-          transform: 'scale(1.05)',
-        },
-        ...sx,
-      }}
-      {...props}
-    />
+    <div style={{ display: 'flex', gap: spacing.sm }}>
+      {actions.map((action, index) => (
+        <Button
+          key={index}
+          variant={action.variant || 'outlined'}
+          color={action.color || 'primary'}
+          size="small"
+          startIcon={action.icon}
+          onClick={action.onClick}
+        >
+          {action.label}
+        </Button>
+      ))}
+    </div>
   )
 }
 
-// Button Group
-export { ButtonGroup } from '@mui/material'
-
-// Export all button-related components
+// Export all button components
 export {
   MuiButton as BaseButton,
   MuiIconButton as BaseIconButton,
   LoadingButton as BaseLoadingButton,
-  Fab as BaseFab,
 }

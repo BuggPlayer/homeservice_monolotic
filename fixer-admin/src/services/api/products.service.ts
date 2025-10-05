@@ -60,6 +60,50 @@ export class ProductsService {
   }
 
   /**
+   * Create product draft
+   */
+  static async createProductDraft(product: CreateProductRequest) {
+    // Mock product draft creation for development
+    if (process.env.NODE_ENV === 'development') {
+      // Simulate API delay
+      await new Promise(resolve => setTimeout(resolve, 1000))
+      
+      // Mock successful product draft creation
+      const mockProduct: Product = {
+        id: Date.now(),
+        name: product.name || 'Draft Product',
+        description: product.description || '',
+        price: product.price || 0,
+        original_price: product.original_price,
+        sku: product.sku || `DRAFT-${Date.now()}`,
+        stock_quantity: product.stock_quantity || 0,
+        images: product.images || [],
+        specifications: product.specifications || {},
+        is_active: false, // Drafts are inactive
+        is_featured: false, // Drafts are never featured
+        weight: product.weight,
+        dimensions: product.dimensions,
+        tags: product.tags || [],
+        category_id: product.category_id,
+        created_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      }
+      
+      return {
+        success: true,
+        data: mockProduct,
+        message: 'Product draft saved successfully!'
+      }
+    }
+    
+    return api.post<Product>('/products/draft', product, {
+      loadingMessage: 'Saving draft...',
+      successMessage: 'Product draft saved successfully!',
+      errorMessage: 'Failed to save product draft.',
+    })
+  }
+
+  /**
    * Update existing product
    */
   static async updateProduct(id: string, product: UpdateProductRequest) {
@@ -129,10 +173,10 @@ export class ProductsService {
   /**
    * Get products by category
    */
-  static async getProductsByCategory(categoryId: string, query: Omit<ProductsQuery, 'categoryId'> = {}) {
+  static async getProductsByCategory(categoryId: string, query: Omit<ProductsQuery, 'category_id'> = {}) {
     return this.getProducts({
       ...query,
-      categoryId,
+      category_id: categoryId,
     })
   }
 }

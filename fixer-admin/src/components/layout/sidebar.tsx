@@ -40,6 +40,7 @@ import {
   AccountCircle as AccountCircleIcon,
   Logout as LogoutIcon,
   Person as PersonIcon,
+  Category as CategoryIcon,
 } from '@mui/icons-material'
 
 const drawerWidth = 280
@@ -56,6 +57,7 @@ const navigationGroups = [
         hasSubmenu: true,
         subItems: [
           { name: 'Products', href: '/products', icon: PackageIcon },
+          { name: 'Categories', href: '/categories', icon: CategoryIcon },
           { name: 'Services', href: '/services', icon: WrenchIcon },
           { name: 'Providers', href: '/providers', icon: ShieldIcon },
         ]
@@ -202,7 +204,7 @@ export function Sidebar({ open, onClose }: SidebarProps) {
                             minWidth: 40,
                           }}
                         >
-                          <item.icon />
+                          {React.createElement(item.icon)}
                         </ListItemIcon>
                         <ListItemText
                           primary={item.name}
@@ -247,7 +249,7 @@ export function Sidebar({ open, onClose }: SidebarProps) {
                                       minWidth: 32,
                                     }}
                                   >
-                                    <subItem.icon />
+                                    {React.createElement(subItem.icon)}
                                   </ListItemIcon>
                                   <ListItemText
                                     primary={subItem.name}

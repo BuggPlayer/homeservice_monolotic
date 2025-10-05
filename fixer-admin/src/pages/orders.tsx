@@ -35,17 +35,17 @@ import { Order, OrderStats } from '../types'
 // Mock data - in real app, this would come from API
 const mockOrders: Order[] = [
   {
-    id: 1,
+    id: '1',
     order_id: '#01766703570',
     customer: {
-      id: 1,
+      id: '1',
       name: 'Muhammad Fateh',
       email: 'muhammad.fateh@email.com',
       avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400',
       type: 'Pro Customer'
     },
     product: {
-      id: 1,
+      id: '1',
       name: 'Airpods Pro Max 2024',
       image: 'https://images.unsplash.com/photo-1606220945770-b5b6c2c55bf1?w=400',
       type: 'Electric Product'
@@ -58,17 +58,17 @@ const mockOrders: Order[] = [
     updated_at: '2024-01-01T00:00:00Z'
   },
   {
-    id: 2,
+    id: '2',
     order_id: '#01766707087',
     customer: {
-      id: 2,
+      id: '2',
       name: 'Kazi Mukarram',
       email: 'kazi.mukarram@email.com',
       avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400',
       type: 'Regular Customer'
     },
     product: {
-      id: 2,
+      id: '2',
       name: 'Neaithy Beauty Cream',
       image: 'https://images.unsplash.com/photo-1556228720-195a672e8a03?w=400',
       type: 'Beauty Product'
@@ -81,17 +81,17 @@ const mockOrders: Order[] = [
     updated_at: '2024-02-24T00:00:00Z'
   },
   {
-    id: 3,
+    id: '3',
     order_id: '#01766701234',
     customer: {
-      id: 3,
+      id: '3',
       name: 'Anderson Mark',
       email: 'anderson.mark@email.com',
       avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400',
       type: 'VIP Customer'
     },
     product: {
-      id: 3,
+      id: '3',
       name: 'Apple Watch Series 4 New',
       image: 'https://images.unsplash.com/photo-1434493789847-2f02dc6ca35d?w=400',
       type: 'Smart Watch'
@@ -104,17 +104,17 @@ const mockOrders: Order[] = [
     updated_at: '2024-03-05T00:00:00Z'
   },
   {
-    id: 4,
+    id: '4',
     order_id: '#01766727267',
     customer: {
-      id: 4,
+      id: '4',
       name: 'John Kales',
       email: 'john.kales@email.com',
       avatar: 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=400',
       type: 'Pro Customer'
     },
     product: {
-      id: 4,
+      id: '4',
       name: 'iPhone 16 Pro Max Plus',
       image: 'https://images.unsplash.com/photo-1592750475338-74b7b21085ab?w=400',
       type: 'Smartphone'
@@ -127,17 +127,17 @@ const mockOrders: Order[] = [
     updated_at: '2024-03-01T00:00:00Z'
   },
   {
-    id: 5,
+    id: '5',
     order_id: '#01766712323',
     customer: {
-      id: 5,
+      id: '5',
       name: 'Saleh Ahmed',
       email: 'saleh.ahmed@email.com',
       avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400',
       type: 'Regular Customer'
     },
     product: {
-      id: 5,
+      id: '5',
       name: 'Small Hi-Speed Fan',
       image: 'https://images.unsplash.com/photo-1581578731548-c6a0c3f2f4fb?w=400',
       type: 'Home Appliance'
@@ -150,17 +150,17 @@ const mockOrders: Order[] = [
     updated_at: '2024-04-01T00:00:00Z'
   },
   {
-    id: 6,
+    id: '6',
     order_id: '#01766712398',
     customer: {
-      id: 6,
+      id: '6',
       name: 'Muhammad Salim',
       email: 'muhammad.salim@email.com',
       avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400',
       type: 'Pro Customer'
     },
     product: {
-      id: 6,
+      id: '6',
       name: 'MI Watch Pro X231 Max',
       image: 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400',
       type: 'Smart Watch'
@@ -173,17 +173,17 @@ const mockOrders: Order[] = [
     updated_at: '2024-05-25T00:00:00Z'
   },
   {
-    id: 7,
+    id: '7',
     order_id: '#01766712078',
     customer: {
-      id: 7,
+      id: '7',
       name: 'Saad Makki',
       email: 'saad.makki@email.com',
       avatar: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=400',
       type: 'VIP Customer'
     },
     product: {
-      id: 7,
+      id: '7',
       name: 'Nike New Model Shoes',
       image: 'https://images.unsplash.com/photo-1549298916-b41d501d3772?w=400',
       type: 'Sports Shoes'
@@ -196,17 +196,17 @@ const mockOrders: Order[] = [
     updated_at: '2024-05-20T00:00:00Z'
   },
   {
-    id: 8,
+    id: '8',
     order_id: '#01766715677',
     customer: {
-      id: 8,
+      id: '8',
       name: 'Jack Kalis',
       email: 'jack.kalis@email.com',
       avatar: 'https://images.unsplash.com/photo-1494790108755-2616b612b786?w=400',
       type: 'Regular Customer'
     },
     product: {
-      id: 8,
+      id: '8',
       name: 'Man T-shirt Green Color',
       image: 'https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?w=400',
       type: 'Clothing'
@@ -219,17 +219,17 @@ const mockOrders: Order[] = [
     updated_at: '2024-05-15T00:00:00Z'
   },
   {
-    id: 9,
+    id: '9',
     order_id: '#01766712233',
     customer: {
-      id: 9,
+      id: '9',
       name: 'Jhon Ken',
       email: 'jhon.ken@email.com',
       avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=400',
       type: 'Pro Customer'
     },
     product: {
-      id: 9,
+      id: '9',
       name: 'Fifa 2026 Football',
       image: 'https://images.unsplash.com/photo-1431324155629-1a6deb1dec8d?w=400',
       type: 'Sports Equipment'
@@ -242,17 +242,17 @@ const mockOrders: Order[] = [
     updated_at: '2024-05-10T00:00:00Z'
   },
   {
-    id: 10,
+    id: '10',
     order_id: '#01766712876',
     customer: {
-      id: 10,
+      id: '10',
       name: 'Makkolam Benndon',
       email: 'makkolam.benndon@email.com',
       avatar: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?w=400',
       type: 'Regular Customer'
     },
     product: {
-      id: 10,
+      id: '10',
       name: 'Winter Cloth Siwtter',
       image: 'https://images.unsplash.com/photo-1441986300917-64674bd600d8?w=400',
       type: 'Clothing'

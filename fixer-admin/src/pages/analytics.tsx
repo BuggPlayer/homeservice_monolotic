@@ -208,7 +208,7 @@ export function Analytics() {
             title="Total Revenue"
             value={formatCurrency(15420.50)}
             change={20.1}
-            icon={DollarIcon}
+            icon={<DollarIcon />}
             color="primary"
             subtitle="This month"
           />
@@ -218,7 +218,7 @@ export function Analytics() {
             title="Total Orders"
             value="1,234"
             change={12.5}
-            icon={CartIcon}
+            icon={<CartIcon />}
             color="success"
             subtitle="This month"
           />
@@ -228,7 +228,7 @@ export function Analytics() {
             title="Active Users"
             value="2,456"
             change={8.3}
-            icon={PeopleIcon}
+            icon={<PeopleIcon />}
             color="info"
             subtitle="This month"
           />
@@ -238,7 +238,7 @@ export function Analytics() {
             title="Avg. Order Value"
             value={formatCurrency(285.75)}
             change={-2.3}
-            icon={AssignmentIcon}
+            icon={<AssignmentIcon />}
             color="warning"
             subtitle="This month"
           />

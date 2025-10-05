@@ -33,6 +33,7 @@ import {
 import { Product, Category } from '../types'
 import { formatCurrency } from '../lib/utils'
 import staticData from '../data/staticData.json'
+import { ProductsService } from '../services/api/products.service'
 
 // Import common form components
 import {
@@ -278,10 +279,12 @@ export function AddProduct() {
   ]
 
   const handleInputChange = (field: keyof ProductFormData) => (
-    event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement> | any
+    eventOrValue: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement> | any
   ) => {
-    const value = event.target.value
-    setFormData(prev => ({
+    // Handle both event objects and direct values
+    const value = eventOrValue?.target?.value !== undefined ? eventOrValue.target.value : eventOrValue
+    
+    setFormData((prev: ProductFormData) => ({
       ...prev,
       [field]: field === 'price' || field === 'originalPrice' || field === 'costPrice' || field === 'stockQuantity' || field === 'weight' || field === 'lowStockThreshold' || field === 'handlingTime' || field === 'downloadLimit' || field === 'downloadExpiry' || field === 'warrantyPeriod'
         ? Number(value) || 0 
@@ -290,15 +293,15 @@ export function AddProduct() {
     
     // Clear error when user starts typing
     if (errors[field]) {
-      setErrors(prev => ({
-        ...prev,
-        [field]: undefined,
-      }))
+    setErrors((prev: any) => ({
+      ...prev,
+      [field]: undefined,
+    }))
     }
   }
 
   const handleDescriptionChange = (value: string) => {
-    setFormData(prev => ({
+    setFormData((prev: ProductFormData) => ({
       ...prev,
       description: value
     }))
@@ -308,7 +311,7 @@ export function AddProduct() {
     event: React.ChangeEvent<HTMLInputElement>
   ) => {
     const value = event.target.type === 'number' ? Number(event.target.value) || 0 : event.target.value
-    setFormData(prev => ({
+    setFormData((prev: ProductFormData) => ({
       ...prev,
       [parentField]: {
         ...prev[parentField] as any,
@@ -380,24 +383,101 @@ export function AddProduct() {
     setIsLoading(true)
     
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 2000))
+      // Transform form data to match backend API
+      const productData = {
+        category_id: formData.categoryId.toString(),
+        name: formData.name,
+        description: formData.description,
+        price: formData.price,
+        original_price: formData.originalPrice || undefined,
+        sku: formData.sku,
+        stock_quantity: formData.stockQuantity,
+        images: formData.images.map(img => img.url), // Extract URLs from ImageFile objects
+        specifications: formData.specifications.reduce((acc, spec) => {
+          if (spec.key && spec.value) {
+            acc[spec.key] = spec.value
+          }
+          return acc
+        }, {} as Record<string, string>),
+        is_active: formData.isActive,
+        is_featured: formData.isFeatured,
+        weight: formData.weight || undefined,
+        dimensions: formData.dimensions.length > 0 || formData.dimensions.width > 0 || formData.dimensions.height > 0 
+          ? {
+              length: formData.dimensions.length,
+              width: formData.dimensions.width,
+              height: formData.dimensions.height,
+            }
+          : undefined,
+        tags: formData.tags,
+      }
+
+      console.log('Product data to submit:', productData)
       
-      console.log('Product data to submit:', formData)
-      // Handle product creation logic here
+      // Call the actual API
+      const response = await ProductsService.createProduct(productData)
+      
+      console.log('Product created successfully:', response.data)
       
       // Reset form after successful submission
       setFormData(initialFormData)
+      setActiveStep(0)
     } catch (error) {
       console.error('Error creating product:', error)
+      // Error handling is already done in the ProductsService
     } finally {
       setIsLoading(false)
     }
   }
 
-  const handleSaveDraft = () => {
-    console.log('Saving draft:', formData)
-    // Handle draft save logic here
+  const handleSaveDraft = async () => {
+    setIsLoading(true)
+    
+    try {
+      // Transform form data to match backend API (same as handleSubmit but for drafts)
+      const productData = {
+        category_id: formData.categoryId.toString(),
+        name: formData.name || 'Draft Product',
+        description: formData.description || '',
+        price: formData.price || 0,
+        original_price: formData.originalPrice || undefined,
+        sku: formData.sku || `DRAFT-${Date.now()}`,
+        stock_quantity: formData.stockQuantity || 0,
+        images: formData.images.map(img => img.url), // Extract URLs from ImageFile objects
+        specifications: formData.specifications.reduce((acc, spec) => {
+          if (spec.key && spec.value) {
+            acc[spec.key] = spec.value
+          }
+          return acc
+        }, {} as Record<string, string>),
+        is_active: false, // Drafts are inactive
+        is_featured: false, // Drafts are never featured
+        weight: formData.weight || undefined,
+        dimensions: formData.dimensions.length > 0 || formData.dimensions.width > 0 || formData.dimensions.height > 0 
+          ? {
+              length: formData.dimensions.length,
+              width: formData.dimensions.width,
+              height: formData.dimensions.height,
+            }
+          : undefined,
+        tags: formData.tags,
+      }
+
+      console.log('Saving draft:', productData)
+      
+      // Call the draft API
+      const response = await ProductsService.createProductDraft(productData)
+      
+      console.log('Draft saved successfully:', response.data)
+      
+      // Show success message but don't reset form - user might want to continue editing
+      
+    } catch (error) {
+      console.error('Error saving draft:', error)
+      // Error handling is already done in the ProductsService
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   return (
@@ -430,8 +510,9 @@ export function AddProduct() {
               variant="outlined"
               startIcon={<SaveIcon />}
               onClick={handleSaveDraft}
+              disabled={isLoading}
             >
-              Save Draft
+              {isLoading ? 'Saving...' : 'Save Draft'}
             </Button>
             <Button
               variant="contained"
@@ -1099,9 +1180,10 @@ export function AddProduct() {
                     variant="outlined"
                     fullWidth
                     startIcon={<SaveIcon />}
-                      onClick={handleSaveDraft}
+                    onClick={handleSaveDraft}
+                    disabled={isLoading}
                   >
-                      Save Draft
+                    {isLoading ? 'Saving...' : 'Save Draft'}
                   </Button>
                   <Button
                     variant="text"

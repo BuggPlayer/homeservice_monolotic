@@ -270,6 +270,43 @@ export interface PaymentIntentResponse {
   paymentIntentId: string
 }
 
+// Order types
+export interface Order {
+  id: string
+  order_id: string
+  customer: {
+    id: string
+    name: string
+    email: string
+    avatar: string
+    type: 'Pro Customer' | 'Regular Customer' | 'VIP Customer'
+  }
+  product: {
+    id: string
+    name: string
+    image: string
+    type: string
+  }
+  amount: number
+  payment_method: string
+  status: 'pending' | 'accepted' | 'completed' | 'rejected' | 'cancelled'
+  order_date: string
+  created_at: string
+  updated_at: string
+}
+
+export interface OrderStats {
+  total_orders: number
+  new_orders: number
+  completed_orders: number
+  cancelled_orders: number
+  total_revenue: number
+  average_order_value: number
+  period: string
+}
+
+export type OrderStatus = 'pending' | 'accepted' | 'completed' | 'rejected' | 'cancelled'
+
 // Product types (existing but enhanced)
 export interface Product {
   id: string
@@ -294,27 +331,44 @@ export interface Product {
 }
 
 export interface CreateProductRequest {
+  category_id: string
   name: string
   description: string
-  sku: string
-  categoryId: string
   price: number
-  stockQuantity: number
-  isFeatured?: boolean
-  images: string[]
-  specifications?: Record<string, any>
+  original_price?: number
+  sku: string
+  stock_quantity: number
+  images?: string[]
+  specifications?: { [key: string]: any }
+  is_active?: boolean
+  is_featured?: boolean
+  weight?: number
+  dimensions?: {
+    length: number
+    width: number
+    height: number
+  }
+  tags?: string[]
 }
 
 export interface UpdateProductRequest {
   name?: string
   description?: string
-  sku?: string
-  categoryId?: string
   price?: number
-  stockQuantity?: number
-  isFeatured?: boolean
+  original_price?: number
+  sku?: string
+  stock_quantity?: number
   images?: string[]
-  specifications?: Record<string, any>
+  specifications?: { [key: string]: any }
+  is_active?: boolean
+  is_featured?: boolean
+  weight?: number
+  dimensions?: {
+    length: number
+    width: number
+    height: number
+  }
+  tags?: string[]
 }
 
 export interface ProductsResponse {
@@ -325,11 +379,16 @@ export interface ProductsResponse {
 export interface ProductsQuery {
   page?: number
   limit?: number
-  categoryId?: string
-  providerId?: string
+  category_id?: string
+  provider_id?: string
+  is_active?: boolean
+  is_featured?: boolean
+  min_price?: number
+  max_price?: number
   search?: string
-  isFeatured?: boolean
-  status?: string
+  tags?: string[]
+  sort_by?: 'name' | 'price' | 'created_at' | 'rating'
+  sort_order?: 'asc' | 'desc'
 }
 
 // Category types (existing but enhanced)
@@ -342,13 +401,17 @@ export interface Category {
   subcategories?: Category[]
   createdAt: string
   updatedAt?: string
+  image?: string
+  sortOrder?: number
 }
 
 export interface CreateCategoryRequest {
   name: string
-  description: string
+  description?: string
   parentId?: string
   status?: 'active' | 'inactive'
+  image?: string
+  sortOrder?: number
 }
 
 export interface UpdateCategoryRequest {
@@ -356,11 +419,23 @@ export interface UpdateCategoryRequest {
   description?: string
   parentId?: string
   status?: 'active' | 'inactive'
+  image?: string
+  sortOrder?: number
 }
 
 export interface CategoriesQuery {
+  page?: number
+  limit?: number
   parentId?: string
   status?: string
+  search?: string
+  sort_by?: 'name' | 'created_at' | 'product_count' | 'status'
+  sort_order?: 'asc' | 'desc'
+}
+
+export interface CategoriesResponse {
+  categories: Category[]
+  pagination: PaginationResponse
 }
 
 // Analytics types

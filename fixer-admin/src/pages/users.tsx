@@ -289,22 +289,22 @@ export function Users() {
       {/* Stats */}
       <Grid container spacing={2} sx={{ mb: 4 }}>
         <Grid item xs={6} sm={4} md={2}>
-          <StatCard title="Total Users" value={userStats.total} icon={PeopleIcon} color="primary" />
+          <StatCard title="Total Users" value={userStats.total} icon={<PeopleIcon />} color="primary" />
         </Grid>
         <Grid item xs={6} sm={4} md={2}>
-          <StatCard title="Admins" value={userStats.admins} icon={AdminIcon} color="error" />
+          <StatCard title="Admins" value={userStats.admins} icon={<AdminIcon />} color="error" />
         </Grid>
         <Grid item xs={6} sm={4} md={2}>
-          <StatCard title="Providers" value={userStats.providers} icon={ProviderIcon} color="info" />
+          <StatCard title="Providers" value={userStats.providers} icon={<ProviderIcon />} color="info" />
         </Grid>
         <Grid item xs={6} sm={4} md={2}>
-          <StatCard title="Customers" value={userStats.customers} icon={CustomerIcon} color="success" />
+          <StatCard title="Customers" value={userStats.customers} icon={<CustomerIcon />} color="success" />
         </Grid>
         <Grid item xs={6} sm={4} md={2}>
-          <StatCard title="Verified" value={userStats.verified} icon={VerifiedIcon} color="success" />
+          <StatCard title="Verified" value={userStats.verified} icon={<VerifiedIcon />} color="success" />
         </Grid>
         <Grid item xs={6} sm={4} md={2}>
-          <StatCard title="Unverified" value={userStats.unverified} icon={UnverifiedIcon} color="warning" />
+          <StatCard title="Unverified" value={userStats.unverified} icon={<UnverifiedIcon />} color="warning" />
         </Grid>
       </Grid>
 

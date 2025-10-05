@@ -4,7 +4,7 @@ import { ErrorHandler } from './error-handler'
 
 // API Configuration
 const API_CONFIG = {
-  baseURL: process.env.REACT_APP_API_URL || 'http://localhost:3001/api',
+  baseURL: process.env.REACT_APP_API_URL || 'http://localhost:8005/api',
   timeout: 10000,
   retryAttempts: 3,
 }

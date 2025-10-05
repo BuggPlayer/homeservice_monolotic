@@ -1,4 +1,4 @@
-// Export all UI components with explicit exports to avoid conflicts
+// Core UI Components with consistent design
 export * from './button'
 export * from './input'
 export * from './DataDisplay'
@@ -11,6 +11,7 @@ export {
   CardWithMedia,
   StatsCard,
   InfoCard,
+  ContentCard,
   // Use CustomPaper from card.tsx (not Layout.tsx)
   CustomPaper as CardCustomPaper
 } from './card'

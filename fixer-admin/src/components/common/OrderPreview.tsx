@@ -1,16 +1,12 @@
 import React from 'react'
 import {
   Box,
-  Grid,
   Typography,
+  Grid,
   Card,
   CardContent,
   Avatar,
   Chip,
-  List,
-  ListItem,
-  ListItemText,
-  ListItemAvatar,
   Divider,
   Stepper,
   Step,
@@ -19,25 +15,20 @@ import {
   Button,
   IconButton,
   useTheme,
-  useMediaQuery,
+  useMediaQuery
 } from '@mui/material'
 import {
-  Person as PersonIcon,
-  Email as EmailIcon,
-  Phone as PhoneIcon,
-  LocationOn as LocationIcon,
-  Payment as PaymentIcon,
-  LocalShipping as ShippingIcon,
+  Edit as EditIcon,
+  Delete as DeleteIcon,
+  Print as PrintIcon,
+  Share as ShareIcon,
   CheckCircle as CheckCircleIcon,
-  Schedule as ScheduleIcon,
-  Receipt as ReceiptIcon,
-  Timeline as TimelineIcon,
-  ShoppingCart as ShoppingCartIcon,
+  RadioButtonUnchecked as RadioButtonUncheckedIcon,
+  AccessTime as AccessTimeIcon
 } from '@mui/icons-material'
-import { formatCurrency, formatDate, safeFormatDate } from '../../lib/utils'
 
-export interface OrderItem {
-  id: string | number
+interface OrderItem {
+  id: string
   name: string
   image: string
   category: string
@@ -46,7 +37,34 @@ export interface OrderItem {
   total: number
 }
 
-export interface OrderTimelineStep {
+interface Customer {
+  id: string
+  name: string
+  email: string
+  phone: string
+  address: string
+  avatar: string
+  type: string
+}
+
+interface Payment {
+  method: string
+  status: string
+  subtotal: number
+  shipping: number
+  tax: number
+  discount: number
+  total: number
+}
+
+interface Shipping {
+  method: string
+  address: string
+  trackingNumber: string
+  estimatedDelivery: string
+}
+
+interface TimelineItem {
   id: string
   title: string
   description: string
@@ -56,230 +74,175 @@ export interface OrderTimelineStep {
   time?: string
 }
 
-export interface CustomerInfo {
-  id: string | number
-  name: string
-  email: string
-  phone: string
-  address?: string
-  avatar?: string
-  type?: string
-}
-
-export interface OrderPreviewData {
-  id: string
-  orderNumber: string
-  status: 'pending' | 'processing' | 'shipped' | 'delivered' | 'cancelled' | 'returned'
-  createdAt: string
-  updatedAt: string
-  items: OrderItem[]
-  customer: CustomerInfo
-  payment: {
-    method: string
-    status: string
-    subtotal: number
-    shipping: number
-    tax: number
-    discount: number
-    total: number
-  }
-  shipping: {
-    method: string
-    address: string
-    trackingNumber?: string
-    estimatedDelivery?: string
-  }
-  timeline: OrderTimelineStep[]
-}
-
 interface OrderPreviewProps {
-  order: OrderPreviewData
-  onEdit?: () => void
-  onDelete?: () => void
-  onPrint?: () => void
-  onShare?: () => void
+  order: {
+    id: string
+    orderNumber: string
+    status: string
+    createdAt: string
+    updatedAt?: string
+    items: OrderItem[]
+    customer: Customer
+    payment: Payment
+    shipping: Shipping
+    timeline: TimelineItem[]
+  }
+  onEdit: () => void
+  onDelete: () => void
+  onPrint: () => void
+  onShare: () => void
 }
 
-export function OrderPreview({ 
-  order, 
-  onEdit, 
-  onDelete, 
-  onPrint, 
-  onShare 
-}: OrderPreviewProps) {
+const getStatusColor = (status: string) => {
+  switch (status.toLowerCase()) {
+    case 'completed':
+      return 'success'
+    case 'accepted':
+      return 'success'
+    case 'pending':
+      return 'warning'
+    case 'rejected':
+    case 'cancelled':
+      return 'error'
+    default:
+      return 'default'
+  }
+}
+
+export const OrderPreview: React.FC<OrderPreviewProps> = ({
+  order,
+  onEdit,
+  onDelete,
+  onPrint,
+  onShare
+}) => {
   const theme = useTheme()
   const isMobile = useMediaQuery(theme.breakpoints.down('md'))
-  const isTablet = useMediaQuery(theme.breakpoints.down('lg'))
 
-  const getStatusColor = (status: string) => {
-    switch (status) {
-      case 'delivered':
-        return 'success'
-      case 'shipped':
-        return 'info'
-      case 'processing':
-        return 'warning'
-      case 'pending':
-        return 'default'
-      case 'cancelled':
-        return 'error'
-      case 'returned':
-        return 'secondary'
-      default:
-        return 'default'
-    }
+  const formatCurrency = (amount: number) => {
+    return new Intl.NumberFormat('en-US', {
+      style: 'currency',
+      currency: 'USD',
+      minimumFractionDigits: 2
+    }).format(amount)
   }
 
-  const getStatusLabel = (status: string) => {
-    switch (status) {
-      case 'delivered':
-        return 'Delivered'
-      case 'shipped':
-        return 'Shipped'
-      case 'processing':
-        return 'Processing'
-      case 'pending':
-        return 'Pending'
-      case 'cancelled':
-        return 'Cancelled'
-      case 'returned':
-        return 'Returned'
-      default:
-        return status
-    }
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString('en-US', {
+      year: 'numeric',
+      month: 'long',
+      day: 'numeric'
+    })
   }
 
   return (
-    <Box sx={{ maxWidth: '100%', mx: 'auto' }}>
-      {/* Order Header */}
-      <Box sx={{ mb: 3 }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
-          <Typography variant="h4" sx={{ fontWeight: 700, color: 'text.primary' }}>
-            {order.orderNumber}
+    <Box sx={{ maxWidth: '100%' }}>
+      {/* Header Actions */}
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+          <Typography variant="h5" sx={{ fontWeight: 600 }}>
+            Order #{order.orderNumber}
           </Typography>
           <Chip
-            label={getStatusLabel(order.status)}
+            label={order.status}
             color={getStatusColor(order.status) as any}
-            size="large"
-            sx={{ fontWeight: 600 }}
+            variant="filled"
+            sx={{ textTransform: 'capitalize', fontWeight: 600 }}
           />
         </Box>
-        <Typography variant="body2" color="text.secondary">
-          Created on {safeFormatDate(order.createdAt)} • Last updated {safeFormatDate(order.updatedAt)}
-        </Typography>
+        
+        <Box sx={{ display: 'flex', gap: 1 }}>
+          <IconButton onClick={onEdit} color="primary" size="small">
+            <EditIcon />
+          </IconButton>
+          <IconButton onClick={onPrint} color="primary" size="small">
+            <PrintIcon />
+          </IconButton>
+          <IconButton onClick={onShare} color="primary" size="small">
+            <ShareIcon />
+          </IconButton>
+          <IconButton onClick={onDelete} color="error" size="small">
+            <DeleteIcon />
+          </IconButton>
+        </Box>
       </Box>
 
       <Grid container spacing={3}>
-        {/* Left Column - Items and Timeline */}
+        {/* Order Items */}
         <Grid item xs={12} lg={8}>
-          {/* Order Items */}
-          <Card sx={{ mb: 3 }}>
+          <Card>
             <CardContent>
-              <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                <ShoppingCartIcon sx={{ mr: 1, color: 'primary.main' }} />
-                <Typography variant="h6" sx={{ fontWeight: 600 }}>
-                  Order Items ({order.items.length})
-                </Typography>
-              </Box>
-              <List>
-                {order.items.map((item, index) => (
-                  <React.Fragment key={item.id}>
-                    <ListItem sx={{ px: 0 }}>
-                      <ListItemAvatar>
-                        <Avatar
-                          src={item.image}
-                          alt={item.name}
-                          variant="rounded"
-                          sx={{ width: 56, height: 56 }}
-                        />
-                      </ListItemAvatar>
-                      <ListItemText
-                        primary={
-                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                            <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
-                              {item.name}
-                            </Typography>
-                            <Chip
-                              label={item.category}
-                              size="small"
-                              variant="outlined"
-                              color="primary"
-                            />
-                          </Box>
-                        }
-                        secondary={
-                          <Box sx={{ mt: 1 }}>
-                            <Typography variant="body2" color="text.secondary">
-                              Quantity: {item.quantity} • Price: {formatCurrency(item.price)}
-                            </Typography>
-                          </Box>
-                        }
-                      />
-                      <Typography variant="h6" sx={{ fontWeight: 600, color: 'primary.main' }}>
+              <Typography variant="h6" sx={{ mb: 2, fontWeight: 600 }}>
+                Order Items
+              </Typography>
+              {order.items.map((item, index) => (
+                <Box key={item.id}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, py: 2 }}>
+                    <Avatar
+                      src={item.image}
+                      alt={item.name}
+                      sx={{ width: 60, height: 60 }}
+                    />
+                    <Box sx={{ flex: 1 }}>
+                      <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
+                        {item.name}
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        {item.category}
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        Quantity: {item.quantity}
+                      </Typography>
+                    </Box>
+                    <Box sx={{ textAlign: 'right' }}>
+                      <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
                         {formatCurrency(item.total)}
                       </Typography>
-                    </ListItem>
-                    {index < order.items.length - 1 && <Divider />}
-                  </React.Fragment>
-                ))}
-              </List>
+                      <Typography variant="body2" color="text.secondary">
+                        {formatCurrency(item.price)} each
+                      </Typography>
+                    </Box>
+                  </Box>
+                  {index < order.items.length - 1 && <Divider />}
+                </Box>
+              ))}
             </CardContent>
           </Card>
 
           {/* Order Timeline */}
-          <Card>
+          <Card sx={{ mt: 3 }}>
             <CardContent>
-              <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                <TimelineIcon sx={{ mr: 1, color: 'primary.main' }} />
-                <Typography variant="h6" sx={{ fontWeight: 600 }}>
-                  Order Timeline
-                </Typography>
-              </Box>
-              <Stepper orientation="vertical" sx={{ pl: 0 }}>
+              <Typography variant="h6" sx={{ mb: 2, fontWeight: 600 }}>
+                Order Timeline
+              </Typography>
+              <Stepper orientation="vertical" activeStep={order.timeline.filter(t => t.completed).length - 1}>
                 {order.timeline.map((step, index) => (
                   <Step key={step.id} completed={step.completed} active={step.active}>
                     <StepLabel
-                      StepIconComponent={({ completed, active }) => (
-                        <Box
-                          sx={{
-                            width: 24,
-                            height: 24,
-                            borderRadius: '50%',
-                            display: 'flex',
-                            alignItems: 'center',
-                            justifyContent: 'center',
-                            backgroundColor: completed
-                              ? 'success.main'
-                              : active
-                              ? 'primary.main'
-                              : 'grey.300',
-                            color: completed || active ? 'white' : 'grey.600',
-                          }}
-                        >
-                          {completed ? (
-                            <CheckCircleIcon sx={{ fontSize: 16 }} />
-                          ) : (
-                            <Typography variant="caption" sx={{ fontWeight: 600 }}>
-                              {index + 1}
-                            </Typography>
-                          )}
-                        </Box>
-                      )}
+                      icon={
+                        step.completed ? (
+                          <CheckCircleIcon color="success" />
+                        ) : step.active ? (
+                          <AccessTimeIcon color="primary" />
+                        ) : (
+                          <RadioButtonUncheckedIcon />
+                        )
+                      }
                     >
-                      <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
-                        {step.title}
-                      </Typography>
-                    </StepLabel>
-                    <StepContent>
-                      <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
-                        {step.description}
-                      </Typography>
-                      {step.date && (
-                        <Typography variant="caption" color="text.secondary">
-                          {step.date} {step.time && `• ${step.time}`}
+                      <Box>
+                        <Typography variant="subtitle2" sx={{ fontWeight: 600 }}>
+                          {step.title}
                         </Typography>
-                      )}
-                    </StepContent>
+                        <Typography variant="body2" color="text.secondary">
+                          {step.description}
+                        </Typography>
+                        {step.date && step.time && (
+                          <Typography variant="caption" color="text.secondary">
+                            {step.date} at {step.time}
+                          </Typography>
+                        )}
+                      </Box>
+                    </StepLabel>
                   </Step>
                 ))}
               </Stepper>
@@ -287,163 +250,127 @@ export function OrderPreview({
           </Card>
         </Grid>
 
-        {/* Right Column - Customer Info, Payment, Shipping */}
+        {/* Order Details Sidebar */}
         <Grid item xs={12} lg={4}>
           {/* Customer Information */}
-          <Card sx={{ mb: 3 }}>
+          <Card>
             <CardContent>
-              <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                <PersonIcon sx={{ mr: 1, color: 'primary.main' }} />
-                <Typography variant="h6" sx={{ fontWeight: 600 }}>
-                  Customer Information
-                </Typography>
-              </Box>
-              <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
+              <Typography variant="h6" sx={{ mb: 2, fontWeight: 600 }}>
+                Customer Information
+              </Typography>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
                 <Avatar
                   src={order.customer.avatar}
-                  sx={{ width: 48, height: 48, mr: 2 }}
-                >
-                  {order.customer.name.charAt(0)}
-                </Avatar>
+                  alt={order.customer.name}
+                  sx={{ width: 50, height: 50 }}
+                />
                 <Box>
                   <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
                     {order.customer.name}
                   </Typography>
-                  {order.customer.type && (
-                    <Chip
-                      label={order.customer.type}
-                      size="small"
-                      color="primary"
-                      variant="outlined"
-                    />
-                  )}
+                  <Typography variant="body2" color="text.secondary">
+                    {order.customer.type}
+                  </Typography>
                 </Box>
               </Box>
-              <List dense>
-                <ListItem sx={{ px: 0 }}>
-                  <EmailIcon sx={{ mr: 2, color: 'text.secondary', fontSize: 20 }} />
-                  <ListItemText
-                    primary={order.customer.email}
-                    primaryTypographyProps={{ variant: 'body2' }}
-                  />
-                </ListItem>
-                <ListItem sx={{ px: 0 }}>
-                  <PhoneIcon sx={{ mr: 2, color: 'text.secondary', fontSize: 20 }} />
-                  <ListItemText
-                    primary={order.customer.phone}
-                    primaryTypographyProps={{ variant: 'body2' }}
-                  />
-                </ListItem>
-                {order.customer.address && (
-                  <ListItem sx={{ px: 0 }}>
-                    <LocationIcon sx={{ mr: 2, color: 'text.secondary', fontSize: 20 }} />
-                    <ListItemText
-                      primary={order.customer.address}
-                      primaryTypographyProps={{ variant: 'body2' }}
-                    />
-                  </ListItem>
-                )}
-              </List>
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                <Typography variant="body2">
+                  <strong>Email:</strong> {order.customer.email}
+                </Typography>
+                <Typography variant="body2">
+                  <strong>Phone:</strong> {order.customer.phone}
+                </Typography>
+                <Typography variant="body2">
+                  <strong>Address:</strong> {order.customer.address}
+                </Typography>
+              </Box>
             </CardContent>
           </Card>
 
           {/* Payment Information */}
-          <Card sx={{ mb: 3 }}>
+          <Card sx={{ mt: 3 }}>
             <CardContent>
-              <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                <PaymentIcon sx={{ mr: 1, color: 'primary.main' }} />
-                <Typography variant="h6" sx={{ fontWeight: 600 }}>
-                  Payment Summary
+              <Typography variant="h6" sx={{ mb: 2, fontWeight: 600 }}>
+                Payment Information
+              </Typography>
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                <Typography variant="body2">
+                  <strong>Method:</strong> {order.payment.method}
                 </Typography>
-              </Box>
-              <List dense>
-                <ListItem sx={{ px: 0, justifyContent: 'space-between' }}>
-                  <ListItemText primary="Subtotal" />
-                  <Typography variant="body2" sx={{ fontWeight: 500 }}>
-                    {formatCurrency(order.payment.subtotal)}
-                  </Typography>
-                </ListItem>
-                <ListItem sx={{ px: 0, justifyContent: 'space-between' }}>
-                  <ListItemText primary="Shipping" />
-                  <Typography variant="body2" sx={{ fontWeight: 500 }}>
-                    {formatCurrency(order.payment.shipping)}
-                  </Typography>
-                </ListItem>
-                <ListItem sx={{ px: 0, justifyContent: 'space-between' }}>
-                  <ListItemText primary="Tax" />
-                  <Typography variant="body2" sx={{ fontWeight: 500 }}>
-                    {formatCurrency(order.payment.tax)}
-                  </Typography>
-                </ListItem>
+                <Typography variant="body2">
+                  <strong>Status:</strong> {order.payment.status}
+                </Typography>
+                <Divider sx={{ my: 1 }} />
+                <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <Typography variant="body2">Subtotal:</Typography>
+                  <Typography variant="body2">{formatCurrency(order.payment.subtotal)}</Typography>
+                </Box>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <Typography variant="body2">Shipping:</Typography>
+                  <Typography variant="body2">{formatCurrency(order.payment.shipping)}</Typography>
+                </Box>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <Typography variant="body2">Tax:</Typography>
+                  <Typography variant="body2">{formatCurrency(order.payment.tax)}</Typography>
+                </Box>
                 {order.payment.discount > 0 && (
-                  <ListItem sx={{ px: 0, justifyContent: 'space-between' }}>
-                    <ListItemText primary="Discount" />
-                    <Typography variant="body2" sx={{ fontWeight: 500, color: 'success.main' }}>
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                    <Typography variant="body2">Discount:</Typography>
+                    <Typography variant="body2" color="success.main">
                       -{formatCurrency(order.payment.discount)}
                     </Typography>
-                  </ListItem>
+                  </Box>
                 )}
                 <Divider sx={{ my: 1 }} />
-                <ListItem sx={{ px: 0, justifyContent: 'space-between' }}>
-                  <ListItemText 
-                    primary="Total" 
-                    primaryTypographyProps={{ variant: 'subtitle1', fontWeight: 600 }}
-                  />
-                  <Typography variant="h6" sx={{ fontWeight: 700, color: 'primary.main' }}>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
+                  <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>Total:</Typography>
+                  <Typography variant="subtitle1" sx={{ fontWeight: 600 }}>
                     {formatCurrency(order.payment.total)}
                   </Typography>
-                </ListItem>
-              </List>
-              <Box sx={{ mt: 2, p: 2, backgroundColor: 'grey.50', borderRadius: 1 }}>
-                <Typography variant="body2" color="text.secondary">
-                  Payment Method: {order.payment.method}
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  Status: {order.payment.status}
-                </Typography>
+                </Box>
               </Box>
             </CardContent>
           </Card>
 
           {/* Shipping Information */}
-          <Card>
+          <Card sx={{ mt: 3 }}>
             <CardContent>
-              <Box sx={{ display: 'flex', alignItems: 'center', mb: 2 }}>
-                <ShippingIcon sx={{ mr: 1, color: 'primary.main' }} />
-                <Typography variant="h6" sx={{ fontWeight: 600 }}>
-                  Shipping Details
+              <Typography variant="h6" sx={{ mb: 2, fontWeight: 600 }}>
+                Shipping Information
+              </Typography>
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                <Typography variant="body2">
+                  <strong>Method:</strong> {order.shipping.method}
+                </Typography>
+                <Typography variant="body2">
+                  <strong>Address:</strong> {order.shipping.address}
+                </Typography>
+                <Typography variant="body2">
+                  <strong>Tracking:</strong> {order.shipping.trackingNumber}
+                </Typography>
+                <Typography variant="body2">
+                  <strong>Estimated Delivery:</strong> {order.shipping.estimatedDelivery}
                 </Typography>
               </Box>
-              <List dense>
-                <ListItem sx={{ px: 0 }}>
-                  <ListItemText
-                    primary="Shipping Method"
-                    secondary={order.shipping.method}
-                  />
-                </ListItem>
-                <ListItem sx={{ px: 0 }}>
-                  <ListItemText
-                    primary="Delivery Address"
-                    secondary={order.shipping.address}
-                  />
-                </ListItem>
-                {order.shipping.trackingNumber && (
-                  <ListItem sx={{ px: 0 }}>
-                    <ListItemText
-                      primary="Tracking Number"
-                      secondary={order.shipping.trackingNumber}
-                    />
-                  </ListItem>
+            </CardContent>
+          </Card>
+
+          {/* Order Dates */}
+          <Card sx={{ mt: 3 }}>
+            <CardContent>
+              <Typography variant="h6" sx={{ mb: 2, fontWeight: 600 }}>
+                Order Dates
+              </Typography>
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+                <Typography variant="body2">
+                  <strong>Order Date:</strong> {formatDate(order.createdAt)}
+                </Typography>
+                {order.updatedAt && (
+                  <Typography variant="body2">
+                    <strong>Last Updated:</strong> {formatDate(order.updatedAt)}
+                  </Typography>
                 )}
-                {order.shipping.estimatedDelivery && (
-                  <ListItem sx={{ px: 0 }}>
-                    <ListItemText
-                      primary="Estimated Delivery"
-                      secondary={order.shipping.estimatedDelivery}
-                    />
-                  </ListItem>
-                )}
-              </List>
+              </Box>
             </CardContent>
           </Card>
         </Grid>
@@ -451,5 +378,3 @@ export function OrderPreview({
     </Box>
   )
 }
-
-export default OrderPreview
