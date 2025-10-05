@@ -73,6 +73,40 @@ export class ProductService {
   }
 
   /**
+   * Create a draft product
+   */
+  async createProductDraft(
+    providerId: string, 
+    data: CreateProductRequest
+  ): Promise<CreateProductResponse> {
+    // For drafts, we allow partial data and set is_active to false
+    const productData = {
+      provider_id: providerId,
+      category_id: data.category_id,
+      name: data.name || 'Draft Product', // Default name for drafts
+      description: data.description || '', // Allow empty description for drafts
+      price: data.price || 0, // Allow 0 price for drafts
+      original_price: data.original_price,
+      sku: data.sku || `DRAFT-${Date.now()}`, // Generate unique SKU for drafts
+      stock_quantity: data.stock_quantity || 0,
+      images: data.images || [],
+      specifications: data.specifications,
+      is_active: false, // Drafts are inactive by default
+      is_featured: false, // Drafts are never featured
+      weight: data.weight,
+      dimensions: data.dimensions,
+      tags: data.tags || [],
+    };
+
+    const product = await this.productRepository.create(productData);
+
+    return {
+      product,
+      message: 'Product draft saved successfully',
+    };
+  }
+
+  /**
    * Get products with filtering and pagination
    */
   async getProducts(params: GetProductsRequest): Promise<GetProductsResponse> {

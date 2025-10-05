@@ -1,5 +1,6 @@
 import { Request, Response } from 'express';
 import { ProductService } from '../services/ProductService';
+import { ServiceProviderService } from '../../providers/services/ServiceProviderService';
 import { ApiResponse } from '@/types';
 import { 
   CreateProductRequest, 
@@ -14,9 +15,11 @@ import {
 
 export class ProductController {
   private productService: ProductService;
+  private serviceProviderService: ServiceProviderService;
 
   constructor() {
     this.productService = new ProductService();
+    this.serviceProviderService = new ServiceProviderService();
   }
 
   /**
@@ -24,7 +27,12 @@ export class ProductController {
    */
   createProduct = async (req: Request, res: Response): Promise<void> => {
     try {
-      const providerId = (req as any).user.userId;
+      const userId = (req as any).user.userId;
+      
+      // Get service provider ID from user ID
+      const serviceProvider = await this.serviceProviderService.getServiceProviderByUserId(userId);
+      const providerId = serviceProvider.serviceProvider.id;
+      
       const data: CreateProductRequest = req.body;
       const result = await this.productService.createProduct(providerId, data);
 
@@ -39,6 +47,38 @@ export class ProductController {
       const response: ApiResponse = {
         success: false,
         message: 'Failed to create product',
+        error: error instanceof Error ? error.message : 'Unknown error',
+      };
+
+      res.status(400).json(response);
+    }
+  };
+
+  /**
+   * Create a draft product
+   */
+  createProductDraft = async (req: Request, res: Response): Promise<void> => {
+    try {
+      const userId = (req as any).user.userId;
+      
+      // Get service provider ID from user ID
+      const serviceProvider = await this.serviceProviderService.getServiceProviderByUserId(userId);
+      const providerId = serviceProvider.serviceProvider.id;
+      
+      const data: CreateProductRequest = req.body;
+      const result = await this.productService.createProductDraft(providerId, data);
+
+      const response: ApiResponse = {
+        success: true,
+        message: result.message,
+        data: result,
+      };
+
+      res.status(201).json(response);
+    } catch (error) {
+      const response: ApiResponse = {
+        success: false,
+        message: 'Failed to save product draft',
         error: error instanceof Error ? error.message : 'Unknown error',
       };
 

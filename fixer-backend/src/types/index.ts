@@ -278,29 +278,4 @@ export interface SocketNotification {
   timestamp: Date;
 }
 
-export interface Product {
-  id: string;
-  name: string;
-  description: string;
-  sku?: string;
-  category_id: string;
-  provider_id: string;
-  price: number;
-  stock_quantity: number;
-  status: 'active' | 'inactive' | 'discontinued';
-  is_featured?: boolean;
-  images: string[];
-  specifications?: Record<string, any>;
-  created_at: Date;
-  updated_at: Date;
-}
 
-export interface Category {
-  id: string;
-  name: string;
-  description: string;
-  parent_id?: string;
-  status: 'active' | 'inactive';
-  created_at: Date;
-  updated_at: Date;
-}

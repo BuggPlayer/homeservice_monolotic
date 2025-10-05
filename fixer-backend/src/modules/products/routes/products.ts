@@ -34,6 +34,9 @@ router.get('/:id', validateIdParam, productController.getProductById);
 // Create product (provider only)
 router.post('/', requireProvider, productController.createProduct);
 
+// Create product draft (provider only)
+router.post('/draft', requireProvider, productController.createProductDraft);
+
 // Update product (provider only, own products)
 router.put('/:id', requireProvider, validateIdParam, productController.updateProduct);
 
