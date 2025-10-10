@@ -65,6 +65,7 @@ export enum SystemPermissions {
   USER_UPDATE = 'user:update',
   USER_DELETE = 'user:delete',
   USER_LIST = 'user:list',
+  USER_APPROVE = 'user:approve',
   
   // Service Request Management
   SERVICE_REQUEST_CREATE = 'service_request:create',
@@ -139,6 +140,24 @@ export interface PermissionCheckResult {
   allowed: boolean;
   reason?: string;
   conditions?: PermissionCondition[];
+}
+
+// User approval interface
+export interface UserApproval {
+  id: string;
+  user_id: string;
+  requested_role: string;
+  status: 'pending' | 'approved' | 'rejected';
+  requested_by?: string;
+  approved_by?: string;
+  rejected_by?: string;
+  approval_notes?: string;
+  rejection_reason?: string;
+  requested_at: Date;
+  approved_at?: Date;
+  rejected_at?: Date;
+  created_at: Date;
+  updated_at: Date;
 }
 
 // RBAC context for permission checking

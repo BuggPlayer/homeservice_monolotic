@@ -1,6 +1,8 @@
 import { UserRepository } from '../../../core/database/repositories';
 import { AuthUtils, BcryptUtils } from '../../../core/utils';
 import { User, JWTPayload } from '../../../core/types';
+import { RBACService } from '../../../core/rbac/RBACService';
+import { SystemRoles, SystemPermissions } from '../../../core/rbac/types';
 import { 
   LoginRequest, 
   RegisterRequest, 
@@ -16,16 +18,17 @@ import {
 
 export class AuthService {
   private userRepository: UserRepository;
+  private rbacService: RBACService;
 
   constructor() {
     this.userRepository = new UserRepository();
+    this.rbacService = new RBACService();
   }
 
   /**
-   * Register a new user
+   * Register a new user (with role-based approval workflow)
    */
-  async register(data: RegisterRequest): Promise<RegisterResponse> {
- 
+  async register(data: RegisterRequest, requestedBy?: string): Promise<RegisterResponse> {
     // Check if user already exists
     const existingUserByEmail = await this.userRepository.findByEmail(data.email);
     if (existingUserByEmail) {
@@ -40,6 +43,16 @@ export class AuthService {
     // Hash password
     const passwordHash = await BcryptUtils.hashPassword(data.password);
 
+    // Determine approval status based on user type
+    let approvalStatus = 'approved';
+    let isVerified = true;
+
+    // Only customers can register directly, others need approval
+    if (data.user_type !== 'customer') {
+      approvalStatus = 'pending';
+      isVerified = false;
+    }
+
     // Create user
     const userData = {
       email: data.email,
@@ -48,23 +61,43 @@ export class AuthService {
       user_type: data.user_type,
       first_name: data.first_name,
       last_name: data.last_name,
-      is_verified: false,
+      is_verified: isVerified,
+      approval_status: approvalStatus,
     };
 
     const user = await this.userRepository.create(userData);
 
-    // Generate tokens
-    const payload: Omit<JWTPayload, 'iat' | 'exp'> = {
-      userId: user.id,
-      email: user.email,
-      userType: user.user_type as 'customer' | 'provider' | 'admin',
-    };
+    // If user needs approval, create approval request
+    if (approvalStatus === 'pending') {
+      await this.rbacService.createUserApproval({
+        user_id: user.id,
+        requested_role: data.user_type,
+        requested_by: requestedBy || user.id,
+        approval_notes: `User registration request for ${data.user_type} role`
+      });
+    } else {
+      // Auto-assign customer role
+      await this.rbacService.assignRoleToUser(user.id, SystemRoles.CUSTOMER, user.id);
+    }
 
-    const tokens = AuthUtils.generateTokens(payload);
+    // Generate tokens (only if approved)
+    let tokens = null;
+    if (approvalStatus === 'approved') {
+      const payload: Omit<JWTPayload, 'iat' | 'exp'> = {
+        userId: user.id,
+        email: user.email,
+        userType: user.user_type as 'customer' | 'provider' | 'admin',
+      };
+      tokens = AuthUtils.generateTokens(payload);
+    }
 
     return {
       user: this.sanitizeUser(user),
       tokens,
+      requiresApproval: approvalStatus === 'pending',
+      message: approvalStatus === 'pending' 
+        ? 'Registration successful. Your account is pending approval from an administrator.'
+        : 'Registration successful.'
     };
   }
 

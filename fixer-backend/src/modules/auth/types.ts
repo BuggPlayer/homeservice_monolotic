@@ -9,7 +9,7 @@ export interface RegisterRequest {
   email: string;
   password: string;
   phone: string;
-  user_type: 'customer' | 'provider';
+  user_type: 'customer' | 'provider' | 'admin';
   first_name: string;
   last_name: string;
 }
@@ -37,7 +37,12 @@ export interface AuthResponse {
 
 export interface LoginResponse extends AuthResponse {}
 
-export interface RegisterResponse extends AuthResponse {}
+export interface RegisterResponse {
+  user: Omit<User, 'password_hash'>;
+  tokens: AuthTokens | null;
+  requiresApproval?: boolean;
+  message?: string;
+}
 
 export interface RefreshTokenResponse {
   tokens: AuthTokens;

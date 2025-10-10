@@ -9,6 +9,8 @@ import {
   validateUpdateProfile 
 } from '../../../core/middleware';
 import { RateLimiter } from '../../../core/middleware/rateLimiter';
+import { requirePermission } from '../../../core/rbac/middleware';
+import { SystemPermissions } from '../../../core/rbac/types';
 
 const router = Router();
 const authController = new AuthController();
@@ -20,6 +22,14 @@ router.use(RateLimiter.auth);
 router.post('/register', validateRegister, authController.register);
 router.post('/login', validateLogin, authController.login);
 router.post('/refresh-token', validateRefreshToken, authController.refreshToken);
+
+// Admin-only registration route (for creating admin users)
+router.post('/register/admin', 
+  authenticateToken, 
+  requirePermission(SystemPermissions.USER_CREATE), 
+  validateRegister, 
+  authController.registerAdmin
+);
 
 // Protected routes
 router.use(authenticateToken);

@@ -26,7 +26,7 @@ export class AuthController {
 
       const response: ApiResponse = {
         success: true,
-        message: 'User registered successfully',
+        message: result.message || 'User registered successfully',
         data: result,
       };
 
@@ -35,6 +35,33 @@ export class AuthController {
       const response: ApiResponse = {
         success: false,
         message: 'Registration failed',
+        error: error instanceof Error ? error.message : 'Unknown error',
+      };
+
+      res.status(400).json(response);
+    }
+  };
+
+  /**
+   * Register a new admin user (admin-only)
+   */
+  registerAdmin = async (req: Request, res: Response): Promise<void> => {
+    try {
+      const data: RegisterRequest = req.body;
+      const requestedBy = (req as any).user.userId;
+      const result = await this.authService.register(data, requestedBy);
+
+      const response: ApiResponse = {
+        success: true,
+        message: 'Admin user registered successfully',
+        data: result,
+      };
+
+      res.status(201).json(response);
+    } catch (error) {
+      const response: ApiResponse = {
+        success: false,
+        message: 'Admin registration failed',
         error: error instanceof Error ? error.message : 'Unknown error',
       };
 

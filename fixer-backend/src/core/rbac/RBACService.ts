@@ -1,4 +1,5 @@
 import { pool } from '../../config/database';
+import { RBACRepository } from '../database/repositories/RBACRepository';
 import { 
   Role, 
   Permission, 
@@ -8,10 +9,17 @@ import {
   SystemPermissions, 
   PermissionCheckResult, 
   RBACContext,
-  PermissionCondition 
+  PermissionCondition,
+  UserApproval
 } from './types';
 
 export class RBACService {
+  private rbacRepository: RBACRepository;
+
+  constructor() {
+    this.rbacRepository = new RBACRepository();
+  }
+
   /**
    * Check if user has permission
    */
@@ -21,40 +29,10 @@ export class RBACService {
     context?: Partial<RBACContext>
   ): Promise<PermissionCheckResult> {
     try {
-      // Get user roles and permissions
-      const userRoles = await this.getUserRoles(userId);
-      const userPermissions = await this.getUserPermissions(userId);
+      const hasPermission = await this.rbacRepository.hasPermission(userId, permission);
       
-      // Check if user has the permission directly
-      if (userPermissions.includes(permission)) {
+      if (hasPermission) {
         return { allowed: true };
-      }
-      
-      // Check role-based permissions
-      for (const role of userRoles) {
-        const rolePermissions = await this.getRolePermissions(role.id);
-        const hasPermission = rolePermissions.some(rp => 
-          rp.permission_id === permission && rp.granted
-        );
-        
-        if (hasPermission) {
-          // Check conditions if any
-          const rolePermission = rolePermissions.find(rp => 
-            rp.permission_id === permission && rp.granted
-          );
-          
-          if (rolePermission?.conditions && context) {
-            const conditionsMet = await this.checkConditions(
-              rolePermission.conditions, 
-              context
-            );
-            if (!conditionsMet) {
-              continue;
-            }
-          }
-          
-          return { allowed: true };
-        }
       }
       
       return { 
@@ -123,38 +101,83 @@ export class RBACService {
   /**
    * Get user roles
    */
-  async getUserRoles(userId: string): Promise<Role[]> {
-    const query = `
-      SELECT r.* FROM roles r
-      INNER JOIN user_roles ur ON r.id = ur.role_id
-      WHERE ur.user_id = $1 AND ur.is_active = true
-      AND (ur.expires_at IS NULL OR ur.expires_at > NOW())
-    `;
-    
-    const result = await pool.query(query, [userId]);
-    return result.rows;
+  async getUserRoles(userId: string): Promise<UserRole[]> {
+    return await this.rbacRepository.getUserRoles(userId);
   }
 
   /**
-   * Get user permissions (direct and role-based)
+   * Get user permissions
    */
   async getUserPermissions(userId: string): Promise<string[]> {
-    const query = `
-      SELECT DISTINCT p.name FROM permissions p
-      WHERE p.id IN (
-        SELECT permission_id FROM user_permissions up
-        WHERE up.user_id = $1 AND up.granted = true AND up.is_active = true
-        UNION
-        SELECT rp.permission_id FROM role_permissions rp
-        INNER JOIN user_roles ur ON rp.role_id = ur.role_id
-        WHERE ur.user_id = $1 AND rp.granted = true AND ur.is_active = true
-        AND (ur.expires_at IS NULL OR ur.expires_at > NOW())
-      )
-    `;
-    
-    const result = await pool.query(query, [userId]);
-    return result.rows.map(row => row.name);
+    return await this.rbacRepository.getUserPermissions(userId);
   }
+
+  /**
+   * Assign role to user
+   */
+  async assignRoleToUser(userId: string, roleName: string, assignedBy: string): Promise<UserRole> {
+    const role = await this.rbacRepository.getRoleByName(roleName);
+    if (!role) {
+      throw new Error(`Role '${roleName}' not found`);
+    }
+    
+    return await this.rbacRepository.assignRoleToUser(userId, role.id, assignedBy);
+  }
+
+  /**
+   * Remove role from user
+   */
+  async removeRoleFromUser(userId: string, roleName: string): Promise<boolean> {
+    const role = await this.rbacRepository.getRoleByName(roleName);
+    if (!role) {
+      throw new Error(`Role '${roleName}' not found`);
+    }
+    
+    return await this.rbacRepository.removeRoleFromUser(userId, role.id);
+  }
+
+  /**
+   * Create user approval request
+   */
+  async createUserApproval(approvalData: Partial<UserApproval>): Promise<UserApproval> {
+    return await this.rbacRepository.createUserApproval(approvalData);
+  }
+
+  /**
+   * Get pending user approvals
+   */
+  async getPendingUserApprovals(): Promise<UserApproval[]> {
+    return await this.rbacRepository.getPendingUserApprovals();
+  }
+
+  /**
+   * Approve user
+   */
+  async approveUser(approvalId: string, approvedBy: string, approvalNotes?: string): Promise<boolean> {
+    return await this.rbacRepository.approveUser(approvalId, approvedBy, approvalNotes);
+  }
+
+  /**
+   * Reject user
+   */
+  async rejectUser(approvalId: string, rejectedBy: string, rejectionReason: string): Promise<boolean> {
+    return await this.rbacRepository.rejectUser(approvalId, rejectedBy, rejectionReason);
+  }
+
+  /**
+   * Get all roles
+   */
+  async getAllRoles(): Promise<Role[]> {
+    return await this.rbacRepository.getAllRoles();
+  }
+
+  /**
+   * Get all permissions
+   */
+  async getAllPermissions(): Promise<Permission[]> {
+    return await this.rbacRepository.getAllPermissions();
+  }
+
 
   /**
    * Get role permissions

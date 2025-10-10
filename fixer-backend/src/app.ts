@@ -16,6 +16,7 @@ import { bookingRoutes } from './modules/bookings';
 import { communicationRoutes } from './modules/communications';
 import { paymentRoutes } from './modules/payments';
 import { productRoutes } from './modules/products';
+import adminRoutes from './modules/admin/routes/admin';
 
 const app = express();
 
@@ -47,6 +48,8 @@ app.get('/health', (req, res) => {
 
 // API routes
 app.use('/api/auth', authRoutes);
+app.use('/api/admin', adminRoutes);
+
 app.use('/api/users', userRoutes);
 app.use('/api/service-requests', serviceRequestRoutes);
 app.use('/api/providers', serviceProviderRoutes);
