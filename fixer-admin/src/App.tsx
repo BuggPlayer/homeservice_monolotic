@@ -6,6 +6,7 @@ import { DataProvider } from './contexts/data-context'
 import { store } from './store'
 import { MainLayout } from './components/layout/main-layout'
 import { ProtectedRoute } from './components/auth/ProtectedRoute'
+import { RoleBasedRoute } from './components/auth/RoleBasedRoute'
 import { ToastProvider } from './components/providers/ToastProvider'
 import { LoadingProvider } from './components/providers/LoadingProvider'
 import { Dashboard } from './pages/dashboard'
@@ -25,6 +26,7 @@ import { Services } from './pages/services'
 import { Providers } from './pages/providers'
 import { Messages } from './pages/messages'
 import { PreviewDemo } from './pages/preview-demo'
+import Unauthorized from './pages/unauthorized'
 
 function App() {
   return (
@@ -33,27 +35,156 @@ function App() {
         <DataProvider>
           <Router>
             <Routes>
+              {/* Public routes */}
               <Route path="/auth" element={<Auth />} />
               <Route path="/signup" element={<Signup />} />
+              <Route path="/unauthorized" element={<Unauthorized />} />
+              
+              {/* Protected routes with RBAC */}
               <Route path="/*" element={
                 <ProtectedRoute>
                   <MainLayout>
                     <Routes>
-                      <Route path="/" element={<Dashboard />} />
-                      <Route path="/products" element={<Products />} />
-                      <Route path="/products/add" element={<AddProduct />} />
-                      <Route path="/categories" element={<Categories />} />
-                      <Route path="/services" element={<Services />} />
-                      <Route path="/requests" element={<ServiceRequests />} />
-                      <Route path="/quotes" element={<Quotes />} />
-                      <Route path="/bookings" element={<Bookings />} />
-                      <Route path="/users" element={<Users />} />
-                      <Route path="/providers" element={<Providers />} />
-                      <Route path="/analytics" element={<Analytics />} />
-                      <Route path="/messages" element={<Messages />} />
-                      <Route path="/orders" element={<Orders />} />
+                      {/* Dashboard - accessible by most roles */}
+                      <Route 
+                        path="/" 
+                        element={
+                          <RoleBasedRoute permissions={['view_dashboard']}>
+                            <Dashboard />
+                          </RoleBasedRoute>
+                        } 
+                      />
+                      
+                      {/* Products */}
+                      <Route 
+                        path="/products" 
+                        element={
+                          <RoleBasedRoute permissions={['view_products']}>
+                            <Products />
+                          </RoleBasedRoute>
+                        } 
+                      />
+                      <Route 
+                        path="/products/add" 
+                        element={
+                          <RoleBasedRoute permissions={['create_products']}>
+                            <AddProduct />
+                          </RoleBasedRoute>
+                        } 
+                      />
+                      
+                      {/* Categories */}
+                      <Route 
+                        path="/categories" 
+                        element={
+                          <RoleBasedRoute permissions={['view_categories']}>
+                            <Categories />
+                          </RoleBasedRoute>
+                        } 
+                      />
+                      
+                      {/* Services */}
+                      <Route 
+                        path="/services" 
+                        element={
+                          <RoleBasedRoute permissions={['view_services']}>
+                            <Services />
+                          </RoleBasedRoute>
+                        } 
+                      />
+                      
+                      {/* Service Requests */}
+                      <Route 
+                        path="/requests" 
+                        element={
+                          <RoleBasedRoute permissions={['view_dashboard']}>
+                            <ServiceRequests />
+                          </RoleBasedRoute>
+                        } 
+                      />
+                      
+                      {/* Quotes */}
+                      <Route 
+                        path="/quotes" 
+                        element={
+                          <RoleBasedRoute permissions={['view_quotes']}>
+                            <Quotes />
+                          </RoleBasedRoute>
+                        } 
+                      />
+                      
+                      {/* Bookings */}
+                      <Route 
+                        path="/bookings" 
+                        element={
+                          <RoleBasedRoute permissions={['view_bookings']}>
+                            <Bookings />
+                          </RoleBasedRoute>
+                        } 
+                      />
+                      
+                      {/* Users - Admin only */}
+                      <Route 
+                        path="/users" 
+                        element={
+                          <RoleBasedRoute permissions={['view_users']}>
+                            <Users />
+                          </RoleBasedRoute>
+                        } 
+                      />
+                      
+                      {/* Providers */}
+                      <Route 
+                        path="/providers" 
+                        element={
+                          <RoleBasedRoute permissions={['view_providers']}>
+                            <Providers />
+                          </RoleBasedRoute>
+                        } 
+                      />
+                      
+                      {/* Analytics - Manager and above */}
+                      <Route 
+                        path="/analytics" 
+                        element={
+                          <RoleBasedRoute permissions={['view_analytics']}>
+                            <Analytics />
+                          </RoleBasedRoute>
+                        } 
+                      />
+                      
+                      {/* Messages */}
+                      <Route 
+                        path="/messages" 
+                        element={
+                          <RoleBasedRoute permissions={['view_messages']}>
+                            <Messages />
+                          </RoleBasedRoute>
+                        } 
+                      />
+                      
+                      {/* Orders */}
+                      <Route 
+                        path="/orders" 
+                        element={
+                          <RoleBasedRoute permissions={['view_orders']}>
+                            <Orders />
+                          </RoleBasedRoute>
+                        } 
+                      />
+                      
+                      {/* Settings */}
+                      <Route 
+                        path="/settings" 
+                        element={
+                          <RoleBasedRoute permissions={['view_settings']}>
+                            <Settings />
+                          </RoleBasedRoute>
+                        } 
+                      />
+                      
+                      {/* Preview Demo - No restrictions */}
                       <Route path="/preview-demo" element={<PreviewDemo />} />
-                      <Route path="/settings" element={<Settings />} />
                     </Routes>
                   </MainLayout>
                 </ProtectedRoute>
